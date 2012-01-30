@@ -16,13 +16,14 @@ try:
     import bluetooth
 except ImportError:
     import lightblueglue as bluetooth
-import os
-from .brick import Brick
+from nxt.brick import Brick
 
 class BlueSock(object):
 
     bsize = 118  # Bluetooth socket block size
     PORT = 1     # Standard NXT rfcomm port
+
+    type = 'bluetooth'
 
     def __init__(self, host):
         self.host = host

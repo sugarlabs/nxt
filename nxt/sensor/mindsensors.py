@@ -14,9 +14,9 @@
 # GNU General Public License for more details.
 
 
-from common import *
-from digital import BaseDigitalSensor, SensorInfo
-from analog import BaseAnalogSensor
+from .common import *
+from .digital import BaseDigitalSensor, SensorInfo
+from .analog import BaseAnalogSensor
 
 
 class SumoEyes(BaseAnalogSensor):   

@@ -16,7 +16,6 @@
 """Use for motor control"""
 
 import time
-import warnings
 
 PORT_A = 0x00
 PORT_B = 0x01
@@ -162,11 +161,15 @@ class BaseMotor(object):
  
         if tacho_limit < 0:
             raise ValueError, "tacho_units must be greater than 0!"
- 
+        #TODO Calibrate the new values for ip socket latency.
         if self.method == 'bluetooth':
             threshold = 70
         elif self.method == 'usb':
             threshold = 5
+        elif self.method == 'ipbluetooth':
+            threshold = 80
+        elif self.method == 'ipusb':
+            threshold = 15
         else:
             threshold = 30 #compromise
 
@@ -224,13 +227,10 @@ class Motor(BaseMotor):
         self._read_state()
         self.sync = 0
         self.turn_ratio = 0
-        if str(type(self.brick.sock)) == "<class 'plugins.lib.nxt.bluesock.BlueSock'>":
-            self.method = 'bluetooth'
-        elif str(type(self.brick.sock)) == "<class 'plugins.lib.nxt.usbsock.USBSock'>":
-            self.method = 'usb'
-        else:
-            print "Warning: Socket object does not of a known type."
-            print "The name is: " + str(type(self.brick.sock))
+        try:
+            self.method = brick.sock.type
+        except:
+            print "Warning: Socket did not report a type!"
             print "Please report this problem to the developers!"
             print "For now, turn() accuracy will not be optimal."
             print "Continuing happily..."

@@ -1,6 +1,7 @@
 # nxt.usbsock module -- USB socket communication with LEGO Minstorms NXT
 # Copyright (C) 2006, 2007  Douglas P Lau
 # Copyright (C) 2009  Marcus Wanner
+# Copyright (C) 2011  Paul Hollensen, Marcus Wanner
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,8 +13,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import usb
-from brick import Brick
+import usb, os
+from nxt.brick import Brick
 
 ID_VENDOR_LEGO = 0x0694
 ID_PRODUCT_NXT = 0x0002
@@ -22,6 +23,8 @@ class USBSock(object):
     'Object for USB connection to NXT'
 
     bsize = 60	# USB socket block size
+
+    type = 'usb'
 
     def __init__(self, device):
         self.device = device
@@ -41,7 +44,8 @@ class USBSock(object):
         self.handle = self.device.open()
         self.handle.setConfiguration(1)
         self.handle.claimInterface(0)
-        self.handle.reset()
+        if os.name != 'nt': # http://code.google.com/p/nxt-python/issues/detail?id=33
+            self.handle.reset()
         if self.debug:
             print 'Connected.'
         return Brick(self)
@@ -75,7 +79,8 @@ class USBSock(object):
 
 def find_bricks(host=None, name=None):
     'Use to look for NXTs connected by USB only. ***ADVANCED USERS ONLY***'
-    # FIXME: probably should check host and name
+    # FIXME: probably should check host (MAC)
+    # if anyone knows how to do this, please file a bug report
     for bus in usb.busses():
         for device in bus.devices:
             if device.idVendor == ID_VENDOR_LEGO and device.idProduct == ID_PRODUCT_NXT:

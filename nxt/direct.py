@@ -14,10 +14,10 @@
 
 'Use for direct communication with the NXT ***EXTREMELY ADVANCED USERS ONLY***'
 
-def _create(opcode):
+def _create(opcode, need_reply = True):
     'Create a simple direct telegram'
     from telegram import Telegram
-    return Telegram(True, opcode)
+    return Telegram(True, opcode, need_reply)
 
 def start_program(opcode, fname):
     tgram = _create(opcode)
@@ -31,21 +31,21 @@ def stop_program(opcode):
     return _create(opcode)
 
 def play_sound_file(opcode, loop, fname):
-    tgram = _create(opcode)
+    tgram = _create(opcode, False)
     tgram.add_u8(loop)
     tgram.add_filename(fname)
     return tgram
 
 def play_tone(opcode, frequency, duration):
     'Play a tone at frequency (Hz) for duration (ms)'
-    tgram = _create(opcode)
+    tgram = _create(opcode, False)
     tgram.add_u16(frequency)
     tgram.add_u16(duration)
     return tgram
 
 def set_output_state(opcode, port, power, mode, regulation, turn_ratio,
     run_state, tacho_limit):
-    tgram = _create(opcode)
+    tgram = _create(opcode, False)
     tgram.add_u8(port)
     tgram.add_s8(power)
     tgram.add_u8(mode)
@@ -56,7 +56,7 @@ def set_output_state(opcode, port, power, mode, regulation, turn_ratio,
     return tgram
 
 def set_input_mode(opcode, port, sensor_type, sensor_mode):
-    tgram = _create(opcode)
+    tgram = _create(opcode, False)
     tgram.add_u8(port)
     tgram.add_u8(sensor_type)
     tgram.add_u8(sensor_mode)
@@ -193,24 +193,26 @@ def _parse_message_read(tgram):
     message = tgram.parse_string()
     return (local_inbox, message[:n_bytes])
 
+#TODO Add docstrings to all methods
+
 OPCODES = {
-    0x00: (start_program, _parse_simple),
-    0x01: (stop_program, _parse_simple),
-    0x02: (play_sound_file, _parse_simple),
-    0x03: (play_tone, _parse_simple),
-    0x04: (set_output_state, _parse_simple),
-    0x05: (set_input_mode, _parse_simple),
-    0x06: (get_output_state, _parse_get_output_state),
-    0x07: (get_input_values, _parse_get_input_values),
-    0x08: (reset_input_scaled_value, _parse_simple),
-    0x09: (message_write, _parse_simple),
-    0x0A: (reset_motor_position, _parse_simple),
-    0x0B: (get_battery_level, _parse_get_battery_level),
-    0x0C: (stop_sound_playback, _parse_simple),
-    0x0D: (keep_alive, _parse_keep_alive),
-    0x0E: (ls_get_status, _parse_ls_get_status),
-    0x0F: (ls_write, _parse_simple),
-    0x10: (ls_read, _parse_ls_read),
-    0x11: (get_current_program_name, _parse_get_current_program_name),
-    0x13: (message_read, _parse_message_read),
+    0x00: (start_program, _parse_simple,'Starts program execution on the NXT brick'),
+    0x01: (stop_program, _parse_simple, 'Stops program execution on the NXT brick'),
+    0x02: (play_sound_file, _parse_simple, 'Plays a sound file on the NXT brick.'),
+    0x03: (play_tone, _parse_simple, 'Plays a tone on the NXT brick'),
+    0x04: (set_output_state, _parse_simple, 'Sets the state of motor ports on the NXT brick'),
+    0x05: (set_input_mode, _parse_simple, 'Sets the state of sensor ports on the NXT brick'),
+    0x06: (get_output_state, _parse_get_output_state, 'Gets the state of motor ports on the NXT brick'),
+    0x07: (get_input_values, _parse_get_input_values, 'Gets the state of sensor ports on the NXT brick'),
+    0x08: (reset_input_scaled_value, _parse_simple), #TODO What does this method do?
+    0x09: (message_write, _parse_simple, 'Sends a message to the mailboxes on the NXT brick'),
+    0x0A: (reset_motor_position, _parse_simple, 'Resets tachometers on the NXT brick'),
+    0x0B: (get_battery_level, _parse_get_battery_level, 'Gets the voltage of the NXT battery'),
+    0x0C: (stop_sound_playback, _parse_simple, 'Stops the currently running sound file'),
+    0x0D: (keep_alive, _parse_keep_alive, 'Resets the standby timer on the NXT brick'),
+    0x0E: (ls_get_status, _parse_ls_get_status), #TODO What does this method do?
+    0x0F: (ls_write, _parse_simple), #TODO What does this method do?
+    0x10: (ls_read, _parse_ls_read), #TODO What does this method do?
+    0x11: (get_current_program_name, _parse_get_current_program_name, 'Gets the name of the currently running program'),
+    0x13: (message_read, _parse_message_read, 'Reads the next message sent from the NXT brick'),
 }

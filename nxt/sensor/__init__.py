@@ -13,10 +13,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-from common import *
-from analog import BaseAnalogSensor
-from digital import BaseDigitalSensor, find_class
-from generic import Touch, Light, Sound, Ultrasonic, Color20
+from .common import *
+from .analog import BaseAnalogSensor
+from .digital import BaseDigitalSensor, find_class
+from .generic import Touch, Light, Sound, Ultrasonic, Color20
 import mindsensors
 MSSumoEyes = mindsensors.SumoEyes
 MSCompassv2 = mindsensors.Compassv2

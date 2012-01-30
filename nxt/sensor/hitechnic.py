@@ -14,9 +14,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-from common import *
-from digital import BaseDigitalSensor
-from analog import BaseAnalogSensor
+from .common import *
+from .digital import BaseDigitalSensor
+from .analog import BaseAnalogSensor
 
 
 class Compass(BaseDigitalSensor):
@@ -247,7 +247,7 @@ class EOPD(BaseAnalogSensor):
 
     def __init__(self, brick, port):
         super(EOPD, self).__init__(brick, port)
-	from math import sqrt
+        from math import sqrt
         self.sqrt = sqrt
 
     def set_range_long(self):

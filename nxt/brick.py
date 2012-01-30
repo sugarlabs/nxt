@@ -14,18 +14,23 @@
 # GNU General Public License for more details.
 
 from time import sleep
-from error import FileNotFound, ModuleNotFound
-from telegram import OPCODES, Telegram
-from sensor import get_sensor
 from threading import Lock
+from nxt.error import FileNotFound, ModuleNotFound
+from nxt.telegram import OPCODES, Telegram
+from nxt.sensor import get_sensor
+from nxt.motcont import MotCont
 
 def _make_poller(opcode, poll_func, parse_func):
     def poll(self, *args, **kwargs):
         ogram = poll_func(opcode, *args, **kwargs)
         with self.lock:
             self.sock.send(str(ogram))
-            igram = Telegram(opcode=opcode, pkt=self.sock.recv())
-        return parse_func(igram)
+            if ogram.reply:
+                igram = Telegram(opcode=opcode, pkt=self.sock.recv())
+        if ogram.reply:
+            return parse_func(igram)
+        else:
+            return None
     return poll
 
 class _Meta(type):
@@ -34,8 +39,12 @@ class _Meta(type):
     def __init__(cls, name, bases, dict):
         super(_Meta, cls).__init__(name, bases, dict)
         for opcode in OPCODES:
-            poll_func, parse_func = OPCODES[opcode]
+            poll_func, parse_func = OPCODES[opcode][0:2]
             m = _make_poller(opcode, poll_func, parse_func)
+            try:
+                m.__doc__ = OPCODES[opcode][2]
+            except:
+                pass
             setattr(cls, poll_func.__name__, m)
 
 
@@ -211,6 +220,7 @@ class Brick(object): #TODO: this begs to have explicit methods
     def __init__(self, sock):
         self.sock = sock
         self.lock = Lock()
+        self.mc = MotCont(self)
 
     def play_tone_and_wait(self, frequency, duration):
         self.play_tone(frequency, duration)
