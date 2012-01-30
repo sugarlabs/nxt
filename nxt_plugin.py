@@ -22,13 +22,12 @@
 import os
 import dbus
 
-import lib.nxt as nxt
 
 from gettext import gettext as _
 from dbus.mainloop.glib import DBusGMainLoop
 
 
-from plugin import Plugin
+from plugins.plugin import Plugin
 
 from TurtleArt.tapalette import make_palette
 from TurtleArt.talogo import primitive_dictionary
@@ -36,9 +35,13 @@ from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
 from TurtleArt.tautils import debug_output
 
 from dbus.mainloop.glib import DBusGMainLoop
-from lib.nxt.locator import BrickNotFoundError
-from lib.nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
-from lib.nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
+
+import sys
+sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
+import nxt
+from nxt.locator import BrickNotFoundError
+from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
+from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
      Ultrasonic, Type
 
 NXT_SENSORS = {'nxttouch': 0, 'nxtultrasonic': 1, 'nxtcolor': 2}
@@ -71,15 +74,15 @@ class Nxt_plugin(Plugin):
 
 
     def setup(self):
-        if self.nxtbrick and self.tw:
-            palette = make_palette('nxt', ["#A0A0A0", "#606060"],
+        #if self.nxtbrick and self.tw:
+        if True:
+            palette = make_palette('nxt', ["#00FF00","#008000"],
                         _('Palette of LEGO Mindstorms NXT objects'))
 
             primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
             palette.add_block('nxtturnmotor',
                       style='basic-style-3arg',
-                      label=[_('turn motor'), _('port'), _('power'),
-                             _('rotations')],
+                      label=[_('turn motor rotations'), _('port'), _('power')],
                       default=['None', 1, 100],
                       help_string=_('Turn a motor'),
                       prim_name='nxtturnmotor')
@@ -200,8 +203,7 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
             palette.add_block('nxtsyncmotors',
                       style='basic-style-3arg',
-                      label=[_('sync\nmotors'), _('power'), _('rotations'),
-                             _('steering')],
+                      label=[_('sync\nmotors steering'), _('power'), _('rotations')],
                       default=[100, 0, 1],
                       help_string=_('Synchronize motors'),
                       prim_name='nxtsyncmotors')
