@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="55"
+   height="55"
+   id="svg2">
+  <metadata
+     id="metadata3669">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs5" />
+  <rect
+     width="55"
+     height="55"
+     rx="0"
+     x="0"
+     y="0"
+     id="rect2839"
+     style="fill:#282828;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+  <g
+     id="g4566"
+     style="fill:#ffffff;fill-opacity:1;stroke:none">
+    <rect
+       width="39.045803"
+       height="7.3473282"
+       x="8.396946"
+       y="7.9770989"
+       id="rect4439"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       width="39.045803"
+       height="7.3473282"
+       x="8.1275778"
+       y="-15.568534"
+       transform="matrix(-0.00502678,0.99998737,-0.99998737,-0.00502678,0,0)"
+       id="rect4439-1"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       width="39.045803"
+       height="7.3473282"
+       x="7.9661255"
+       y="-47.686447"
+       transform="matrix(-0.00502678,0.99998737,-0.99998737,-0.00502678,0,0)"
+       id="rect4439-1-5"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       width="14.484735"
+       height="7.3473282"
+       x="8.396945"
+       y="39.780533"
+       id="rect4439-6"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       width="14.484735"
+       height="7.3473282"
+       x="32.85305"
+       y="39.780537"
+       id="rect4439-6-4"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       width="9.2366409"
+       height="9.0267172"
+       x="23.091602"
+       y="22.88168"
+       id="rect4556"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+  </g>
+</svg>
