@@ -32,6 +32,7 @@ from plugins.plugin import Plugin
 from TurtleArt.tapalette import make_palette
 from TurtleArt.talogo import primitive_dictionary
 from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
+from TurtleArt.tapalette import palette_name_to_index
 from TurtleArt.tautils import debug_output
 from TurtleArt.taconstants import BOX_COLORS
 from dbus.mainloop.glib import DBusGMainLoop
@@ -79,8 +80,7 @@ class Nxt_plugin(Plugin):
 
     def setup(self):
 
-        self.change_color_blocks(self.nxtbrick)
-
+        
         palette = make_palette('nxt', ["#00FF00","#008000"],
                     _('Palette of LEGO Mindstorms NXT objects'))
 
@@ -230,6 +230,7 @@ class Nxt_plugin(Plugin):
         palette.add_block('nxtbrake',
                   style='basic-style-1arg',
                   label=_('brake motor'),
+                  default=['None'],
                   help_string=_('Brake specified motor'),
                   prim_name='nxtbrake')
         self.tw.lc.def_prim('nxtbrake', 1, lambda self, x:
@@ -244,14 +245,16 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
             primitive_dictionary['nxtsetcolor'](x, y))
 
-        primitive_dictionary['nxtrefresh'] = self.refreshButia
+        primitive_dictionary['nxtrefresh'] = self._prim_nxtrefresh
         palette.add_block('nxtrefresh',
                      style='basic-style',
                      label=_('refresh NXT'),
-                     prim_name='refreshButia',
+                     prim_name='nxtrefresh',
                      help_string=_('search for a connected NXT brick'))
         self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
             primitive_dictionary['nxtrefresh']())
+
+        self.change_color_blocks(self.nxtbrick)
 
     def start(self):
         # This gets called by the start button
@@ -355,13 +358,16 @@ class Nxt_plugin(Plugin):
         Color20(self.nxtbrick, port).set_light_color(color)
 
     def _prim_nxtrefresh(self):
+        
         try:
             self.nxtbrick = nxt.locator.find_one_brick(method=self.metodo)
         except:
             self.nxtbrick = None
         self.change_color_blocks(self.nxtbrick)
+        self.tw.show_toolbar_palette(palette_name_to_index('nxt'), regenerate=True)
 
-    def change_color_blocks(self, brick);
+    def change_color_blocks(self, brick):
+        BOX_COLORS['nxtrefresh'] = COLOR_PRESENT
         if (brick == None):
             BOX_COLORS['nxtturnmotor'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtporta'] = COLOR_NOTPRESENT
@@ -398,4 +404,5 @@ class Nxt_plugin(Plugin):
             BOX_COLORS['nxtstartmotor'] = COLOR_PRESENT
             BOX_COLORS['nxtbrake'] = COLOR_PRESENT
             BOX_COLORS['nxtsetcolor'] = COLOR_PRESENT
+
 
