@@ -46,7 +46,7 @@ from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
      Ultrasonic, Type
 
-NXT_SENSORS = {'nxttouch': 0, 'nxtultrasonic': 1, 'nxtcolor': 2}
+NXT_SENSORS = {'nxttouch': 0, 'nxtultrasonic': 1, 'nxtcolor': 2, 'nxtgray': 3}
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
@@ -205,6 +205,15 @@ class Nxt_plugin(Plugin):
             lambda self, x, y:
             primitive_dictionary['nxtreadsensor'](x, y))
 
+        primitive_dictionary['nxtgray'] = self._prim_nxtgray
+        palette.add_block('nxtgray',
+                  style='box-style',
+                  label=_('gray'),
+                  help_string=_('Gray sensor'),
+                  prim_name='nxtgray')
+        self.tw.lc.def_prim('nxtgray', 0,
+            lambda self: primitive_dictionary['nxtgray']())
+
         primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
         palette.add_block('nxtsyncmotors',
                   style='basic-style-3arg',
@@ -255,6 +264,7 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtrefresh']())
 
         self.change_color_blocks(self.nxtbrick)
+        
 
     def start(self):
         # This gets called by the start button
@@ -303,6 +313,9 @@ class Nxt_plugin(Plugin):
     def _prim_nxtcolor(self):
         return NXT_SENSORS['nxtcolor']
 
+    def _prim_nxtgray(self):
+        return NXT_SENSORS['nxtgray']
+
     def _prim_nxtport1(self):
         return PORT_1
 
@@ -331,6 +344,9 @@ class Nxt_plugin(Plugin):
                   CONSTANTS['yellow'], CONSTANTS['red'], WHITE]
         if sensor == NXT_SENSORS['nxtcolor']:
             return colors[Color20(self.nxtbrick, port).get_sample()]
+        elif sensor == NXT_SENSORS['nxtgray']:
+            a = Color20(self.nxtbrick, port).get_gray()
+            return int(a)
         elif sensor == NXT_SENSORS['nxtultrasonic']:
             return Ultrasonic(self.nxtbrick, port).get_sample()
         elif sensor == NXT_SENSORS['nxttouch']:
@@ -381,6 +397,7 @@ class Nxt_plugin(Plugin):
             BOX_COLORS['nxtport4'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtultrasonic'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtcolor'] = COLOR_NOTPRESENT
+            BOX_COLORS['nxtgray'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtreadsensor'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtsyncmotors'] = COLOR_NOTPRESENT
             BOX_COLORS['nxtstartmotor'] = COLOR_NOTPRESENT
@@ -399,6 +416,7 @@ class Nxt_plugin(Plugin):
             BOX_COLORS['nxtport4'] = COLOR_PRESENT
             BOX_COLORS['nxtultrasonic'] = COLOR_PRESENT
             BOX_COLORS['nxtcolor'] = COLOR_PRESENT
+            BOX_COLORS['nxtgray'] = COLOR_PRESENT
             BOX_COLORS['nxtreadsensor'] = COLOR_PRESENT
             BOX_COLORS['nxtsyncmotors'] = COLOR_PRESENT
             BOX_COLORS['nxtstartmotor'] = COLOR_PRESENT
