@@ -151,7 +151,7 @@ class Color20(BaseAnalogSensor):
         self.get_reflected_light(Type.COLORFULL)
         return self.get_input_values().scaled_value
 
-    def get_gray(self):
+    def get_light(self):
         self.get_reflected_light(Type.COLORNONE)
         return self.get_input_values().scaled_value
     
