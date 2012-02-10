@@ -12,7 +12,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import traceback, ConfigParser, os
+import sys
+import os
+import traceback, ConfigParser
+import usbsock
+import ipsock
+
+lista = []
 
 class BrickNotFoundError(Exception):
     pass
@@ -31,53 +37,20 @@ find_one_brick. Any or all can be selected."""
         self.fantomusb = fantomusb
         self.fantombt = fantombt
 
-def find_bricks(host=None, name=None, silent=False, method=Method()):
+def find_bricks(silent=False, method=Method()):
     """Used by find_one_brick to look for bricks ***ADVANCED USERS ONLY***"""
     methods_available = 0
-
+    lista_socks = []
     if method.usb:
         try:
-            import usbsock
             methods_available += 1
-            socks = usbsock.find_bricks(host, name)
+            socks = usbsock.find_bricks(lista)
             for s in socks:
-                yield s
-        except ImportError:
-            import sys
-            if not silent: print >>sys.stderr, "USB module unavailable, not searching there"
-    
-    if method.bluetooth:
-        try:
-            import bluesock
-            methods_available += 1
-            try:
-                socks = bluesock.find_bricks(host, name)
-                for s in socks:
-                    yield s
-            except (bluesock.bluetooth.BluetoothError, IOError): #for cases such as no adapter, bluetooth throws IOError, not BluetoothError
-                pass
-        except ImportError:
-            import sys
-            if not silent: print >>sys.stderr, "Bluetooth module unavailable, not searching there"
-    
-    if method.fantom:
-        try:
-            import fantomsock
-            methods_available += 1
-            if method.fantomusb:
-                usbsocks = fantomsock.find_bricks(host, name, False)
-                for s in usbsocks:
-                    yield s
-            if method.fantombt:
-                btsocks = fantomsock.find_bricks(host, name, True)
-                for s in btsocks:
-                    yield s
-        except ImportError:
-            import sys
-            if not silent: print >>sys.stderr, "Fantom module unavailable, not searching there"
-    
-    if methods_available == 0:
-        raise NoBackendError("No selected backends are available! Did you install the comm modules?")
+                lista_socks.append(s)
+        except:
+            pass
+     
+    return lista_socks
 
 
 def find_one_brick(host=None, name=None, silent=False, strict=None, debug=False, method=None, confpath=None):
@@ -93,23 +66,26 @@ to only look for devices which match the args provided. The confpath arg
 specifies the location of the configuration file which brick location 
 information will be read from if no brick location directives (host, 
 name, strict, or method) are provided."""
-    if debug and silent:
-        silent=False
-        print "silent and debug can't both be set; giving debug priority"
 
-    conf = read_config(confpath, debug)
-    if not (host or name or strict or method):
-        host	= conf.get('Brick', 'host')
-        name	= conf.get('Brick', 'name')
-        strict	= bool(int(conf.get('Brick', 'strict')))
-        method	= eval('Method(%s)' % conf.get('Brick', 'method'))
-    if not strict: strict = True
-    if not method: method = Method()
-    if debug:
-        print "Host: %s Name: %s Strict: %s" % (host, name, str(strict))
-        print "USB: %s BT: %s Fantom: %s FUSB: %s FBT: %s" % (method.usb, method.bluetooth, method.fantom, method.fantombt, method.fantomusb)
-    
-    for s in find_bricks(host, name, silent, method):
+
+    method = Method(usb=True, bluetooth=False, fantomusb=False, fantombt=False)
+    flist = find_bricks(silent, method)
+    print 'lista3 ', lista
+    b = None
+    if not(flist == []):
+        s = flist[0]
+        #if not (s == None):
+        b = s.connect()
+    return b
+
+
+
+
+
+
+
+
+    """for s in flist:
         try:
             if host and 'host' in dir(s) and s.host != host:
                 if debug:
@@ -117,6 +93,7 @@ name, strict, or method) are provided."""
                 if strict: continue
             b = s.connect()
             info = b.get_device_info()
+            print 'info: ', info
             if host and info[1] != host:
                 if debug:
                     print "Warning: the brick found does not match the host provided (get_device_info)."
@@ -134,11 +111,10 @@ name, strict, or method) are provided."""
             if debug:
                 traceback.print_exc()
                 print "Failed to connect to possible brick"
-    raise BrickNotFoundError
+    raise BrickNotFoundError"""
 
 
 def server_brick(host, port = 2727):
-    import ipsock
     sock = ipsock.IpSock(host, port)
     return sock.connect()
 
