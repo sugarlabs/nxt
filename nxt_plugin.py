@@ -77,7 +77,7 @@ class Nxt_plugin(Plugin):
 
         
         palette = make_palette('nxt', ["#00FF00","#008000"],
-                    _('Palette of LEGO Mindstorms NXT objects'))
+                    _('Palette of LEGO NXT blocks'))
 
         primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
         palette.add_block('nxtturnmotor',
@@ -254,7 +254,7 @@ class Nxt_plugin(Plugin):
                      style='basic-style',
                      label=_('refresh NXT'),
                      prim_name='nxtrefresh',
-                     help_string=_('search for a connected NXT brick'))
+                     help_string=_('search for a NXT brick and refresh the blocks'))
         self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
             primitive_dictionary['nxtrefresh']())
 
