@@ -419,6 +419,12 @@ class Nxt_plugin(Plugin):
         except:
             self.nxtbrick = None
 
+        self.change_color_blocks()
+
+        self.tw.show_toolbar_palette(palette_name_to_index('nxt'), regenerate=True, show=True)
+
+    def change_color_blocks(self):
+
         nxt_palette_blocks = palette_blocks[palette_name_to_index('nxt')]
 
         for block in nxt_palette_blocks:
@@ -437,5 +443,4 @@ class Nxt_plugin(Plugin):
                     else:
                         block.set_colors(COLOR_NOTPRESENT)
 
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt'), regenerate=True, show=True)
 
