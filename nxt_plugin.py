@@ -43,18 +43,23 @@ from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
      Ultrasonic, Type
 
-NXT_SENSORS = {'nxttouch': 0, 'nxtultrasonic': 1, 'nxtcolor': 2, 'nxtlight': 3}
+NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3}
+NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
+NXT_SENSOR_PORTS = {_('PORT 1'): PORT_1, _('PORT 2'): PORT_2, _('PORT 3'): PORT_3, _('PORT 4'): PORT_4}
+
 colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'], CONSTANTS['red'], WHITE]
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
+
+fail = _('Fail')
 
 class Nxt_plugin(Plugin):
 
     def __init__(self, parent):
         self.tw = parent
         self.nxtbrick = None
-
+        
         """
         Adding a rule to /etc/udev/rules.d call: /etc/udev/rules.d/99-lego.rules
         with:
@@ -285,11 +290,14 @@ class Nxt_plugin(Plugin):
         pass
 
     def _prim_nxtturnmotor(self, port, turns, power):
-        if self.nxtbrick:
+        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
+            port = NXT_MOTOR_PORTS[port]
             try:
                 Motor(self.nxtbrick, port).turn(power, int(turns*360))
             except:
-                pass
+                return fail
+        else:
+            return fail
 
     def _prim_nxtsyncmotors(self, power, steering, turns):
         if self.nxtbrick:
@@ -299,50 +307,58 @@ class Nxt_plugin(Plugin):
                 syncmotors = SynchronizedMotors(motorB, motorC, steering)
                 syncmotors.turn(power, int(turns*360))
             except:
-                pass
+                return fail
+        else:
+            return fail
 
     def _prim_nxtplaytone(self, freq, time):
         if self.nxtbrick:
-            self.nxtbrick.play_tone(freq, time)
+            try:
+                self.nxtbrick.play_tone(freq, time)
+            except:
+                return fail
+        else:
+            return fail
 
     def _prim_nxttouch(self):
-        return NXT_SENSORS['nxttouch']
+        return _('touch')
         
     def _prim_nxtultrasonic(self):
-        return NXT_SENSORS['nxtultrasonic']
+        return _('ultrasonic')
 
     def _prim_nxtcolor(self):
-        return NXT_SENSORS['nxtcolor']
+        return _('color')
 
     def _prim_nxtlight(self):
-        return NXT_SENSORS['nxtlight']
+        return _('light')
 
     def _prim_nxtport1(self):
-        return PORT_1
+        return _('PORT 1')
 
     def _prim_nxtport2(self):
-        return PORT_2
+        return _('PORT 2')
 
     def _prim_nxtport3(self):
-        return PORT_3
+        return _('PORT 3')
 
     def _prim_nxtport4(self):
-        return PORT_4
+        return _('PORT 4')
 
     def _prim_nxtporta(self):
-        return PORT_A
+        return _('PORT A')
 
     def _prim_nxtportb(self):
-        return PORT_B
+        return _('PORT B')
 
     def _prim_nxtportc(self):
-        return PORT_C
+        return _('PORT C')
 
     def _prim_nxtreadsensor(self, sensor, port):
         """ Read sensor at specified port"""
         res = -1
-        if self.nxtbrick:
+        if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
             try:
+                port = NXT_SENSOR_PORTS[port]
                 if sensor == NXT_SENSORS['nxtcolor']:
                     res = colors[Color20(self.nxtbrick, port).get_sample()]
                 elif sensor == NXT_SENSORS['nxtlight']:
@@ -356,51 +372,57 @@ class Nxt_plugin(Plugin):
         return res
 
     def _prim_nxtstartmotor(self, port, power):
-        if self.nxtbrick:
+        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
+            port = NXT_MOTOR_PORTS[port]
             try:
                 Motor(self.nxtbrick, port).weak_turn(power, 0)
             except:
-                pass
+                return fail
+        else:
+            return fail
 
     def _prim_nxtbrake(self, port):
-        if self.nxtbrick:
+        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
+            port = NXT_MOTOR_PORTS[port]
             try:
                 Motor(self.nxtbrick, port).brake()
             except:
-                pass
+                return fail
+        else:
+            return fail
 
     def _prim_nxtsetcolor(self, color, port):
-        if self.nxtbrick:
+        if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
+            port = NXT_SENSOR_PORTS[port]
+            if color == WHITE:
+                color = Type.COLORFULL
+            elif color == CONSTANTS['red']:
+                color = Type.COLORRED
+            elif color == CONSTANTS['green']:
+                color = Type.COLORGREEN
+            elif color == CONSTANTS['blue']:
+                color = Type.COLORBLUE
+            else:
+                color = Type.COLORNONE
             try:
-                if color == WHITE:
-                    color = Type.COLORFULL
-                elif color == CONSTANTS['red']:
-                    color = Type.COLORRED
-                elif color == CONSTANTS['green']:
-                    color = Type.COLORGREEN
-                elif color == CONSTANTS['blue']:
-                    color = Type.COLORBLUE
-                else:
-                    color = Type.COLORNONE
                 Color20(self.nxtbrick, port).set_light_color(color)
             except:
-                pass
+                return fail
+        else:
+            return fail        
 
     def _prim_nxtrefresh(self):
         try:
-            self.nxtbrick.__del__()
+            if not(self.nxtbrick == None):
+                self.nxtbrick.__del__()
             self.nxtbrick = nxt.locator.find_one_brick()
         except:
             self.nxtbrick = None
-        self.change_color_blocks()
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt'), regenerate=True, show=True)
-
-    def change_color_blocks(self):
 
         nxt_palette_blocks = palette_blocks[palette_name_to_index('nxt')]
 
         for block in nxt_palette_blocks:
-            if not(self.nxtbrick == None) or (block == 'nxtrefresh'):
+            if (self.nxtbrick) or (block == 'nxtrefresh'):
                 BOX_COLORS[block] = COLOR_PRESENT
                 special_block_colors[block] = COLOR_PRESENT
             else:
@@ -410,10 +432,10 @@ class Nxt_plugin(Plugin):
         for block in self.tw.block_list.list:
             if block.type in ['proto', 'block']:
                 if block.name in nxt_palette_blocks:
-                    if not(self.nxtbrick == None) or (block.name == 'nxtrefresh'):
+                    if (self.nxtbrick) or (block.name == 'nxtrefresh'):
                         block.set_colors(COLOR_PRESENT)
                     else:
                         block.set_colors(COLOR_NOTPRESENT)
 
-
+        self.tw.show_toolbar_palette(palette_name_to_index('nxt'), regenerate=True, show=True)
 
