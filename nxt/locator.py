@@ -70,19 +70,13 @@ name, strict, or method) are provided."""
 
     method = Method(usb=True, bluetooth=False, fantomusb=False, fantombt=False)
     flist = find_bricks(silent, method)
-    print 'lista3 ', lista
+    #print 'lista3 ', lista
     b = None
     if not(flist == []):
         s = flist[0]
         #if not (s == None):
         b = s.connect()
     return b
-
-
-
-
-
-
 
 
     """for s in flist:

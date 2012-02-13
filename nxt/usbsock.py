@@ -79,14 +79,14 @@ def find_bricks(lista):
     'Use to look for NXTs connected by USB only. ***ADVANCED USERS ONLY***'
     # FIXME: probably should check host (MAC)
     # if anyone knows how to do this, please file a bug report
-    
     if not(lista == []):
         b_a = lista[0]
         try:
-            print 'passsssssssssssssoooooooo'
+            #print 'pass'
             b_a.close()
         except:
-            print 'cannot close the anterior brick'
+            pass
+            #print 'cannot close the anterior brick'
     lista = []
     for bus in usb.busses():
         for device in bus.devices:
