@@ -359,13 +359,13 @@ class Nxt_plugin(Plugin):
         if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
             try:
                 port = NXT_SENSOR_PORTS[port]
-                if sensor == NXT_SENSORS['nxtcolor']:
+                if sensor == _('color'):
                     res = colors[Color20(self.nxtbrick, port).get_sample()]
-                elif sensor == NXT_SENSORS['nxtlight']:
+                elif sensor == _('light'):
                     res = int(Color20(self.nxtbrick, port).get_light())
-                elif sensor == NXT_SENSORS['nxtultrasonic']:
+                elif sensor == _('ultrasonic'):
                     res = Ultrasonic(self.nxtbrick, port).get_sample()
-                elif sensor == NXT_SENSORS['nxttouch']:
+                elif sensor == _('touch'):
                     res = Touch(self.nxtbrick, port).get_sample()
             except:
                 pass
