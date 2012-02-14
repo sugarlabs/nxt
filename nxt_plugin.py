@@ -270,9 +270,9 @@ class Nxt_plugin(Plugin):
         # This gets called by the stop button
         if self.nxtbrick:
             try:
-                self._prim_nxtbrake(PORT_A)
-                self._prim_nxtbrake(PORT_B)
-                self._prim_nxtbrake(PORT_C)
+                Motor(self.nxtbrick, PORT_A).brake()
+                Motor(self.nxtbrick, PORT_B).brake()
+                Motor(self.nxtbrick, PORT_C).brake()
             except:
                 pass
 
