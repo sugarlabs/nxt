@@ -80,6 +80,25 @@ class Nxt_plugin(Plugin):
         palette = make_palette('nxt', ["#00FF00","#008000"],
                     _('Palette of LEGO NXT blocks'))
 
+        primitive_dictionary['nxtrefresh'] = self._prim_nxtrefresh
+        palette.add_block('nxtrefresh',
+                     style='basic-style',
+                     label=_('refresh NXT'),
+                     prim_name='nxtrefresh',
+                     help_string=_('search for a connected NXT brick'))
+        self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
+            primitive_dictionary['nxtrefresh']())
+
+        primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
+        palette.add_block('nxtplaytone',
+                  style='basic-style-2arg',
+                  label=[_('play tone'), _('freq'), _('time')],
+                  default=[433, 500],
+                  help_string=_('play a tone at freq for time'),
+                  prim_name='nxtplaytone')
+        self.tw.lc.def_prim('nxtplaytone', 2,
+            lambda self, x, y: primitive_dictionary['nxtplaytone'](x, y))
+
         primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
         palette.add_block('nxtturnmotor',
                   style='basic-style-3arg',
@@ -90,6 +109,17 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtturnmotor', 3,
             lambda self, x, y, z:
             primitive_dictionary['nxtturnmotor'](x, y, z))
+
+        primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
+        palette.add_block('nxtsyncmotors',
+                  style='basic-style-3arg',
+                  label=[_('sync motors\nsteering'), _('power'), _('rotations')],
+                  default=[100, 0, 1],
+                  help_string=_('synchronize two motors'),
+                  prim_name='nxtsyncmotors')
+        self.tw.lc.def_prim('nxtsyncmotors', 3,
+            lambda self, x, y, z:
+            primitive_dictionary['nxtsyncmotors'](x, y, z))
 
         primitive_dictionary['nxtporta'] = self._prim_nxtporta
         palette.add_block('nxtporta',
@@ -118,17 +148,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtportc', 0,
             lambda self: primitive_dictionary['nxtportc']())
 
-        primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
-        palette.add_block('nxtsyncmotors',
-                  style='basic-style-3arg',
-                  label=[_('sync motors\nsteering'), _('power'), _('rotations')],
-                  default=[100, 0, 1],
-                  help_string=_('synchronize two motors'),
-                  prim_name='nxtsyncmotors')
-        self.tw.lc.def_prim('nxtsyncmotors', 3,
-            lambda self, x, y, z:
-            primitive_dictionary['nxtsyncmotors'](x, y, z))
-
         primitive_dictionary['nxtstartmotor'] = self._prim_nxtstartmotor
         palette.add_block('nxtstartmotor',
                   style='basic-style-2arg',
@@ -149,25 +168,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtbrake', 1, lambda self, x:
             primitive_dictionary['nxtbrake'](x))
 
-        primitive_dictionary['nxtreadsensor'] = self._prim_nxtreadsensor
-        palette.add_block('nxtreadsensor',
-                  style='number-style-block',
-                  label=[_('read'), _('sensor'), _('port')],
-                  help_string=_('read sensor output'),
-                  prim_name='nxtreadsensor')
-        self.tw.lc.def_prim('nxtreadsensor', 2,
-            lambda self, x, y:
-            primitive_dictionary['nxtreadsensor'](x, y))
-
-        primitive_dictionary['nxttouch'] = self._prim_nxttouch
-        palette.add_block('nxttouch',
-                  style='box-style',
-                  label=_('touch'),
-                  help_string=_('touch sensor'),
-                  prim_name='nxttouch')
-        self.tw.lc.def_prim('nxttouch', 0,
-            lambda self: primitive_dictionary['nxttouch']())
-
         primitive_dictionary['nxtport1'] = self._prim_nxtport1
         palette.add_block('nxtport1',
                   style='box-style',
@@ -176,42 +176,6 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtport1')
         self.tw.lc.def_prim('nxtport1', 0,
             lambda self: primitive_dictionary['nxtport1']())
-
-        primitive_dictionary['nxtport2'] = self._prim_nxtport2
-        palette.add_block('nxtport2',
-                  style='box-style',
-                  label=_('PORT 2'),
-                  help_string=_('PORT 2 of the brick'),
-                  prim_name='nxtport2')
-        self.tw.lc.def_prim('nxtport2', 0,
-            lambda self: primitive_dictionary['nxtport2']())
-
-        primitive_dictionary['nxtport3'] = self._prim_nxtport3
-        palette.add_block('nxtport3',
-                  style='box-style',
-                  label=_('PORT 3'),
-                  help_string=_('PORT 3 of the brick'),
-                  prim_name='nxtport3')
-        self.tw.lc.def_prim('nxtport3', 0,
-            lambda self: primitive_dictionary['nxtport3']())
-
-        primitive_dictionary['nxtport4'] = self._prim_nxtport4
-        palette.add_block('nxtport4',
-                  style='box-style',
-                  label=_('PORT 4'),
-                  help_string=_('PORT 4 of the brick'),
-                  prim_name='nxtport4')
-        self.tw.lc.def_prim('nxtport4', 0,
-            lambda self: primitive_dictionary['nxtport4']())
-
-        primitive_dictionary['nxtultrasonic'] = self._prim_nxtultrasonic
-        palette.add_block('nxtultrasonic',
-                  style='box-style',
-                  label=_('ultrasonic'),
-                  help_string=_('distance sensor'),
-                  prim_name='nxtultrasonic')
-        self.tw.lc.def_prim('nxtultrasonic', 0,
-            lambda self: primitive_dictionary['nxtultrasonic']())
 
         primitive_dictionary['nxtcolor'] = self._prim_nxtcolor
         palette.add_block('nxtcolor',
@@ -231,15 +195,60 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtlight', 0,
             lambda self: primitive_dictionary['nxtlight']())
 
-        primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
-        palette.add_block('nxtplaytone',
-                  style='basic-style-2arg',
-                  label=[_('play tone'), _('freq'), _('time')],
-                  default=[433, 500],
-                  help_string=_('play a tone at freq for time'),
-                  prim_name='nxtplaytone')
-        self.tw.lc.def_prim('nxtplaytone', 2,
-            lambda self, x, y: primitive_dictionary['nxtplaytone'](x, y))
+        primitive_dictionary['nxtport2'] = self._prim_nxtport2
+        palette.add_block('nxtport2',
+                  style='box-style',
+                  label=_('PORT 2'),
+                  help_string=_('PORT 2 of the brick'),
+                  prim_name='nxtport2')
+        self.tw.lc.def_prim('nxtport2', 0,
+            lambda self: primitive_dictionary['nxtport2']())
+
+        primitive_dictionary['nxttouch'] = self._prim_nxttouch
+        palette.add_block('nxttouch',
+                  style='box-style',
+                  label=_('touch'),
+                  help_string=_('touch sensor'),
+                  prim_name='nxttouch')
+        self.tw.lc.def_prim('nxttouch', 0,
+            lambda self: primitive_dictionary['nxttouch']())
+
+        primitive_dictionary['nxtultrasonic'] = self._prim_nxtultrasonic
+        palette.add_block('nxtultrasonic',
+                  style='box-style',
+                  label=_('ultrasonic'),
+                  help_string=_('distance sensor'),
+                  prim_name='nxtultrasonic')
+        self.tw.lc.def_prim('nxtultrasonic', 0,
+            lambda self: primitive_dictionary['nxtultrasonic']())
+
+        primitive_dictionary['nxtport3'] = self._prim_nxtport3
+        palette.add_block('nxtport3',
+                  style='box-style',
+                  label=_('PORT 3'),
+                  help_string=_('PORT 3 of the brick'),
+                  prim_name='nxtport3')
+        self.tw.lc.def_prim('nxtport3', 0,
+            lambda self: primitive_dictionary['nxtport3']())
+
+        primitive_dictionary['nxtreadsensor'] = self._prim_nxtreadsensor
+        palette.add_block('nxtreadsensor',
+                  style='number-style-block',
+                  label=[_('read'), _('sensor'), _('port')],
+                  help_string=_('read sensor output'),
+                  prim_name='nxtreadsensor')
+        self.tw.lc.def_prim('nxtreadsensor', 2,
+            lambda self, x, y:
+            primitive_dictionary['nxtreadsensor'](x, y))
+
+        primitive_dictionary['nxtport4'] = self._prim_nxtport4
+        palette.add_block('nxtport4',
+                  style='box-style',
+                  label=_('PORT 4'),
+                  help_string=_('PORT 4 of the brick'),
+                  prim_name='nxtport4')
+        self.tw.lc.def_prim('nxtport4', 0,
+            lambda self: primitive_dictionary['nxtport4']())
 
         primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
         palette.add_block('nxtsetcolor',
@@ -250,14 +259,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
             primitive_dictionary['nxtsetcolor'](x, y))
 
-        primitive_dictionary['nxtrefresh'] = self._prim_nxtrefresh
-        palette.add_block('nxtrefresh',
-                     style='basic-style',
-                     label=_('refresh NXT'),
-                     prim_name='nxtrefresh',
-                     help_string=_('search for a connected NXT brick'))
-        self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
-            primitive_dictionary['nxtrefresh']())
 
         self.change_color_blocks()
         
