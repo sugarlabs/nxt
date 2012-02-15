@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Wander Lairson Costa 
+# Copyright (C) 2009-2011 Wander Lairson Costa 
 # 
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
@@ -31,8 +31,13 @@ __author__ = 'Wander Lairson Costa'
 __all__ = ['methodtrace', 'functiontrace']
 
 import logging
-import types
-import _interop
+import usb._interop as _interop
+
+_enable_tracing = False
+
+def enable_tracing(enable):
+    global _enable_tracing
+    _enable_tracing = enable
 
 def _trace_function_call(logger, fname, *args, **named_args):
     logger.debug(
@@ -45,6 +50,8 @@ def _trace_function_call(logger, fname, *args, **named_args):
 # decorator for methods calls tracing
 def methodtrace(logger):
     def decorator_logging(f):
+        if not _enable_tracing:
+            return f
         def do_trace(*args, **named_args):
             # this if is just a optimization to avoid unecessary string formatting
             if logging.DEBUG >= logger.getEffectiveLevel():
@@ -58,10 +65,12 @@ def methodtrace(logger):
 # decorator for methods calls tracing
 def functiontrace(logger):
     def decorator_logging(f):
+        if not _enable_tracing:
+            return f
         def do_trace(*args, **named_args):
             # this if is just a optimization to avoid unecessary string formatting
             if logging.DEBUG >= logger.getEffectiveLevel():
-                _trace_function_call(logger, f.__name__, *uargs, **named_args)
+                _trace_function_call(logger, f.__name__, *args, **named_args)
             return f(*args, **named_args)
         _interop._update_wrapper(do_trace, f)
         return do_trace

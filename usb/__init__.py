@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Wander Lairson Costa 
+# Copyright (C) 2009-2011 Wander Lairson Costa 
 # 
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
@@ -47,10 +47,12 @@ __all__ = ['legacy', 'core', 'backend', 'util']
 
 
 def _setup_log():
+    from usb import _debug
     logger = logging.getLogger('usb')
     debug_level = os.getenv('PYUSB_DEBUG_LEVEL')
 
     if debug_level is not None:
+        _debug.enable_tracing(True)
         filename = os.getenv('PYUSB_LOG_FILENAME')
 
         LEVELS = {'debug': logging.DEBUG,
@@ -75,6 +77,11 @@ def _setup_log():
             def emit(self, record):
                 pass
 
+        # We set the log level to avoid delegation to the
+        # parent log handler (if there is one).
+        # Thanks to Chris Clark to pointing this out.
+        logger.setLevel(logging.CRITICAL + 10)
+
         logger.addHandler(NullHandler())
 
 
@@ -82,4 +89,4 @@ _setup_log()
 
 # We import all 'legacy' module symbols to provide compatility
 # with applications that use 0.x versions.
-from legacy import *
+from usb.legacy import *

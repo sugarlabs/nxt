@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Wander Lairson Costa 
+# Copyright (C) 2009-2011 Wander Lairson Costa 
 # 
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
@@ -28,17 +28,115 @@
 
 from ctypes import *
 import ctypes.util
-import util
-import sys
-from .._debug import methodtrace
+import usb.util
+from usb._debug import methodtrace
 import logging
-from meta import IBackend
+import errno
 
 __author__ = 'Wander Lairson Costa'
 
-__all__ = ['get_backend']
+__all__ = [
+            'get_backend'
+            'OPENUSB_SUCCESS'
+            'OPENUSB_PLATFORM_FAILURE'
+            'OPENUSB_NO_RESOURCES'
+            'OPENUSB_NO_BANDWIDTH'
+            'OPENUSB_NOT_SUPPORTED'
+            'OPENUSB_HC_HARDWARE_ERROR'
+            'OPENUSB_INVALID_PERM'
+            'OPENUSB_BUSY'
+            'OPENUSB_BADARG'
+            'OPENUSB_NOACCESS'
+            'OPENUSB_PARSE_ERROR'
+            'OPENUSB_UNKNOWN_DEVICE'
+            'OPENUSB_INVALID_HANDLE'
+            'OPENUSB_SYS_FUNC_FAILURE'
+            'OPENUSB_NULL_LIST'
+            'OPENUSB_CB_CONTINUE'
+            'OPENUSB_CB_TERMINATE'
+            'OPENUSB_IO_STALL'
+            'OPENUSB_IO_CRC_ERROR'
+            'OPENUSB_IO_DEVICE_HUNG'
+            'OPENUSB_IO_REQ_TOO_BIG'
+            'OPENUSB_IO_BIT_STUFFING'
+            'OPENUSB_IO_UNEXPECTED_PID'
+            'OPENUSB_IO_DATA_OVERRUN'
+            'OPENUSB_IO_DATA_UNDERRUN'
+            'OPENUSB_IO_BUFFER_OVERRUN'
+            'OPENUSB_IO_BUFFER_UNDERRUN'
+            'OPENUSB_IO_PID_CHECK_FAILURE'
+            'OPENUSB_IO_DATA_TOGGLE_MISMATCH'
+            'OPENUSB_IO_TIMEOUT'
+            'OPENUSB_IO_CANCELED'
+        ]
 
 _logger = logging.getLogger('usb.backend.openusb')
+
+OPENUSB_SUCCESS = 0
+OPENUSB_PLATFORM_FAILURE = -1
+OPENUSB_NO_RESOURCES = -2
+OPENUSB_NO_BANDWIDTH = -3
+OPENUSB_NOT_SUPPORTED = -4
+OPENUSB_HC_HARDWARE_ERROR = -5
+OPENUSB_INVALID_PERM = -6
+OPENUSB_BUSY = -7
+OPENUSB_BADARG = -8
+OPENUSB_NOACCESS = -9
+OPENUSB_PARSE_ERROR = -10
+OPENUSB_UNKNOWN_DEVICE = -11
+OPENUSB_INVALID_HANDLE = -12
+OPENUSB_SYS_FUNC_FAILURE = -13
+OPENUSB_NULL_LIST = -14
+OPENUSB_CB_CONTINUE = -20
+OPENUSB_CB_TERMINATE = -21
+OPENUSB_IO_STALL = -50
+OPENUSB_IO_CRC_ERROR = -51
+OPENUSB_IO_DEVICE_HUNG = -52
+OPENUSB_IO_REQ_TOO_BIG = -53
+OPENUSB_IO_BIT_STUFFING = -54
+OPENUSB_IO_UNEXPECTED_PID = -55
+OPENUSB_IO_DATA_OVERRUN = -56
+OPENUSB_IO_DATA_UNDERRUN = -57
+OPENUSB_IO_BUFFER_OVERRUN = -58
+OPENUSB_IO_BUFFER_UNDERRUN = -59
+OPENUSB_IO_PID_CHECK_FAILURE = -60
+OPENUSB_IO_DATA_TOGGLE_MISMATCH = -61
+OPENUSB_IO_TIMEOUT = -62
+OPENUSB_IO_CANCELED = -63
+
+_openusb_errno = {
+    OPENUSB_SUCCESS:None,
+    OPENUSB_PLATFORM_FAILURE:None,
+    OPENUSB_NO_RESOURCES:errno.__dict__.get('ENOMEM', None),
+    OPENUSB_NO_BANDWIDTH:None,
+    OPENUSB_NOT_SUPPORTED:errno.__dict__.get('ENOSYS', None),
+    OPENUSB_HC_HARDWARE_ERROR:errno.__dict__.get('EIO', None),
+    OPENUSB_INVALID_PERM:errno.__dict__.get('EBADF', None),
+    OPENUSB_BUSY:errno.__dict__.get('EBUSY', None),
+    OPENUSB_BADARG:errno.__dict__.get('EINVAL', None),
+    OPENUSB_NOACCESS:errno.__dict__.get('EACCES', None),
+    OPENUSB_PARSE_ERROR:None,
+    OPENUSB_UNKNOWN_DEVICE:errno.__dict__.get('ENODEV', None),
+    OPENUSB_INVALID_HANDLE:errno.__dict__.get('EINVAL', None),
+    OPENUSB_SYS_FUNC_FAILURE:None,
+    OPENUSB_NULL_LIST:None,
+    OPENUSB_CB_CONTINUE:None,
+    OPENUSB_CB_TERMINATE:None,
+    OPENUSB_IO_STALL:errno.__dict__.get('EIO', None),
+    OPENUSB_IO_CRC_ERROR:errno.__dict__.get('EIO', None),
+    OPENUSB_IO_DEVICE_HUNG:errno.__dict__.get('EIO', None),
+    OPENUSB_IO_REQ_TOO_BIG:errno.__dict__.get('E2BIG', None),
+    OPENUSB_IO_BIT_STUFFING:None,
+    OPENUSB_IO_UNEXPECTED_PID:errno.__dict__.get('ESRCH', None),
+    OPENUSB_IO_DATA_OVERRUN:errno.__dict__.get('EOVERFLOW', None),
+    OPENUSB_IO_DATA_UNDERRUN:None,
+    OPENUSB_IO_BUFFER_OVERRUN:errno.__dict__.get('EOVERFLOW', None),
+    OPENUSB_IO_BUFFER_UNDERRUN:None,
+    OPENUSB_IO_PID_CHECK_FAILURE:None,
+    OPENUSB_IO_DATA_TOGGLE_MISMATCH:None,
+    OPENUSB_IO_TIMEOUT:errno.__dict__.get('ETIMEDOUT', None),
+    OPENUSB_IO_CANCELED:errno.__dict__.get('EINTR', None)
+}
 
 class _usb_endpoint_desc(Structure):
     _fields_ = [('bLength', c_uint8),
@@ -153,7 +251,7 @@ def _load_library():
 def _setup_prototypes(lib):
     # int32_t openusb_init(uint32_t flags , openusb_handle_t *handle);
     lib.openusb_init.argtypes = [c_uint32, POINTER(_openusb_handle)]
-    lib.openusb.restype = c_int32
+    lib.openusb_init.restype = c_int32
 
     # void openusb_fini(openusb_handle_t handle );
     lib.openusb_fini.argtypes = [_openusb_handle]
@@ -207,6 +305,11 @@ def _setup_prototypes(lib):
     #                                   uint8_t cfg);
     lib.openusb_set_configuration.argtypes = [_openusb_dev_handle, c_uint8]
     lib.openusb_set_configuration.restype = c_int32
+
+    # int32_t openusb_get_configuration(openusb_dev_handle_t dev,
+    #                                   uint8_t *cfg);
+    lib.openusb_get_configuration.argtypes = [_openusb_dev_handle, POINTER(c_uint8)]
+    lib.openusb_get_configuration.restype = c_int32
 
     # int32_t openusb_claim_interface(openusb_dev_handle_t dev,
     #                                 uint8_t ifc,
@@ -374,9 +477,10 @@ def _setup_prototypes(lib):
     lib.openusb_isoc_xfer.restype = c_int32
 
 def _check(retval):
-    if retval.value != 0:
-        from core import USBError
-        raise USBError(_lib.openusb_strerror(retval).value)
+    ret = retval.value
+    if ret != 0:
+        from usb.core import USBError
+        raise USBError(_lib.openusb_strerror(ret), ret, _openusb_errno[ret])
     return retval
 
 class _Context(object):
@@ -415,7 +519,7 @@ class _DevIterator(object):
     def __del__(self):
         _lib.openusb_free_devid_list(self.devlist)
 
-class _OpenUSB(IBackend):
+class _OpenUSB(usb.backend.IBackend):
     @methodtrace(_logger)
     def enumerate_devices(self):
         for bus in _BusIterator():
@@ -430,6 +534,8 @@ class _OpenUSB(IBackend):
                                               None,
                                               0,
                                               byref(desc)))
+        desc.bus = None
+        desc.address = None
         return desc
 
     @methodtrace(_logger)
@@ -483,6 +589,12 @@ class _OpenUSB(IBackend):
     @methodtrace(_logger)
     def set_configuration(self, dev_handle, config_value):
         _check(_lib.openusb_set_configuration(dev_handle, config_value))
+
+    @methodtrace(_logger)
+    def get_configuration(self, dev_handle):
+        config = c_uint8()
+        _check(_lib.openusb_get_configuration(dev_handle, byref(config)))
+        return config.value
 
     @methodtrace(_logger)
     def set_interface_altsetting(self, dev_handle, intf, altsetting):
@@ -561,7 +673,7 @@ class _OpenUSB(IBackend):
         request.setup.wIndex
         request.timeout = timeout
 
-        direction = util.ctrl_direction(bmRequestType)
+        direction = usb.util.ctrl_direction(bmRequestType)
 
         if direction == ENDPOINT_OUT:
             buffer = data_or_wLength

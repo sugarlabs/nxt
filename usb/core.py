@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Wander Lairson Costa 
+# Copyright (C) 2009-2011 Wander Lairson Costa 
 # 
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
@@ -41,12 +41,10 @@ __author__ = 'Wander Lairson Costa'
 
 __all__ = ['Device', 'Configuration', 'Interface', 'Endpoint', 'find']
 
-import array
-import util
+import usb.util as util
 import copy
-import sys
 import operator
-import _interop
+import usb._interop as _interop
 import logging
 
 _logger = logging.getLogger('usb.core')
@@ -58,7 +56,7 @@ def _set_attr(input, output, fields):
         setattr(output, f, int(getattr(input, f)))
 
 class _ResourceManager(object):
-    def __init__(self, parent, dev, backend):
+    def __init__(self, dev, backend):
         self.backend = backend
         self._active_cfg_index = None
         self.dev = dev
@@ -66,19 +64,28 @@ class _ResourceManager(object):
         self._claimed_intf = _interop._set()
         self._alt_set = {}
         self._ep_type_map = {}
+
     def managed_open(self):
         if self.handle is None:
             self.handle = self.backend.open_device(self.dev)
         return self.handle
+
     def managed_close(self):
         if self.handle is not None:
             self.backend.close_device(self.handle)
             self.handle = None
+
     def managed_set_configuration(self, device, config):
         if config is None:
             cfg = device[0]
         elif isinstance(config, Configuration):
             cfg = config
+        elif config == 0: # unconfigured state
+            class FakeConfiguration(object):
+                def __init__(self):
+                    self.index = None
+                    self.bConfigurationValue = 0
+            cfg = FakeConfiguration()
         else:
             cfg = util.find_descriptor(device, bConfigurationValue=config)
         self.managed_open()
@@ -91,10 +98,11 @@ class _ResourceManager(object):
         # are not valid anymore
         self._ep_type_map.clear()
         self._alt_set.clear()
+
     def managed_claim_interface(self, device, intf):
         self.managed_open()
         if intf is None:
-            cfg = self.get_active_configuration()
+            cfg = self.get_active_configuration(device)
             i = cfg[(0,0)].bInterfaceNumber
         elif isinstance(intf, Interface):
             i = intf.bInterfaceNumber
@@ -103,6 +111,7 @@ class _ResourceManager(object):
         if i not in self._claimed_intf:
             self.backend.claim_interface(self.handle, i)
             self._claimed_intf.add(i)
+
     def managed_release_interface(self, device, intf):
         if intf is None:
             cfg = self.get_active_configuration(device)
@@ -114,6 +123,7 @@ class _ResourceManager(object):
         if i in self._claimed_intf:
             self.backend.release_interface(self.handle, i)
             self._claimed_intf.remove(i)
+
     def managed_set_interface(self, device, intf, alt):
         if intf is None:
             i = self.get_interface(device, intf)
@@ -130,6 +140,7 @@ class _ResourceManager(object):
             alt = i.bAlternateSetting
         self.backend.set_interface_altsetting(self.handle, i.bInterfaceNumber, alt)
         self._alt_set[i.bInterfaceNumber] = alt
+
     def get_interface(self, device, intf):
         # TODO: check the viability of issuing a GET_INTERFACE
         # request when we don't have a alternate setting cached
@@ -146,16 +157,20 @@ class _ResourceManager(object):
                                             bAlternateSetting=self._alt_set[intf])
             else:
                 return util.find_descriptor(cfg, bInterfaceNumber=intf)
+
     def get_active_configuration(self, device):
-        # TODO: when we haven't called managed_set_configuration,
-        # issue a get_configuration request to discover the current configuration
-        # See patch #283765.
-        # Meanwhile, we just return the first configuration found
         if self._active_cfg_index is None:
-            cfg = device[0]
+            self.managed_open()
+            cfg = util.find_descriptor(
+                    device,
+                    bConfigurationValue=self.backend.get_configuration(self.handle)
+                )
+            if cfg is None:
+                raise USBError('Configuration not set')
             self._active_cfg_index = cfg.index
             return cfg
         return device[self._active_cfg_index]
+
     def get_endpoint_type(self, device, address, intf):
         intf = self.get_interface(device, intf)
         key = (address, intf.bInterfaceNumber, intf.bAlternateSetting)
@@ -163,13 +178,15 @@ class _ResourceManager(object):
             return self._ep_type_map[key]
         except KeyError:
             e = util.find_descriptor(intf, bEndpointAddress=address)
-            type = util.endpoint_type(e.bmAttributes)
-            self._ep_type_map[key] = type
-            return type
+            etype = util.endpoint_type(e.bmAttributes)
+            self._ep_type_map[key] = etype
+            return etype
+
     def release_all_interfaces(self, device):
         claimed = copy.copy(self._claimed_intf)
         for i in claimed:
             self.managed_release_interface(device, i)
+
     def dispose(self, device, close_handle = True):
         self.release_all_interfaces(device)
         if close_handle:
@@ -182,8 +199,19 @@ class USBError(IOError):
     r"""Exception class for USB errors.
     
     Backends must raise this exception when USB related errors occur.
+    The backend specific error code is available through the
+    'backend_error_code' member variable.
     """
-    pass
+
+    def __init__(self, strerror, error_code = None, errno = None):
+        r"""Initialize the object.
+
+        This initializes the USBError object. The strerror and errno are passed
+        to the parent object. The error_code parameter is attributed to the
+        backend_error_code member variable.
+        """
+        IOError.__init__(self, errno, strerror)
+        self.backend_error_code = error_code
 
 class Endpoint(object):
     r"""Represent an endpoint object.
@@ -327,7 +355,7 @@ class Interface(object):
                     'bInterfaceClass',
                     'bInterfaceSubClass',
                     'bInterfaceProtocol',
-                    'iInterface'
+                    'iInterface',
                 )
             )
 
@@ -455,7 +483,7 @@ class Device(object):
     >>> import usb.core
     >>> dev = usb.core.find(idVendor=myVendorId, idProduct=myProductId)
     >>> dev.set_configuration()
-    >>> dev.write(1, 'teste')
+    >>> dev.write(1, 'test')
 
     This sample finds the device of interest (myVendorId and myProductId should be
     replaced by the corresponding values of your device), then configures the device
@@ -476,7 +504,7 @@ class Device(object):
         of it. The backend parameter is a instance of a backend
         object.
         """
-        self._ctx = _ResourceManager(self, dev, backend)
+        self._ctx = _ResourceManager(dev, backend)
         self.__default_timeout = _DEFAULT_TIMEOUT
 
         desc = backend.get_device_descriptor(dev)
@@ -498,9 +526,14 @@ class Device(object):
                     'iManufacturer',
                     'iProduct',
                     'iSerialNumber',
-                    'bNumConfigurations'
+                    'bNumConfigurations',
+                    'address',
+                    'bus'
                 )
             )
+
+        self.bus = int(desc.bus) if desc.bus is not None else None
+        self.address = int(desc.address) if desc.address is not None else None
 
     def set_configuration(self, configuration = None):
         r"""Set the active configuration.
@@ -543,14 +576,11 @@ class Device(object):
         """
         self._ctx.managed_set_interface(self, interface, alternate_setting)
 
-    def get_interface_altsetting(self, interface = None):
-        r"""Get the active alternate setting of the given interface."""
-        return self._ctx.get_interface(self, interface)
-
     def reset(self):
         r"""Reset the device."""
         self._ctx.dispose(self, False)
         self._ctx.backend.reset_device(self._ctx.handle)
+        self._ctx.dispose(self, True)
 
     def write(self, endpoint, data, interface = None, timeout = None):
         r"""Write data to the endpoint.
@@ -585,7 +615,7 @@ class Device(object):
                 self._ctx.handle,
                 endpoint,
                 intf.bInterfaceNumber,
-                array.array('B', data),
+                _interop.as_array(data),
                 self.__get_timeout(timeout)
             )
 
@@ -647,10 +677,7 @@ class Device(object):
         value is the data payload read, as an array object.
         """
         if util.ctrl_direction(bmRequestType) == util.CTRL_OUT:
-            if data_or_wLength is None:
-                a = array.array('B')
-            else:
-                a = array.array('B', data_or_wLength)
+            a = _interop.as_array(data_or_wLength)
         elif data_or_wLength is None:
             a = 0
         else:
@@ -674,7 +701,8 @@ class Device(object):
         If a kernel driver is active, and the object will be unable to perform I/O.
         """
         self._ctx.managed_open()
-        return self._ctx.backend.is_kernel_driver_active(self._ctx.handle, interface)
+        return self._ctx.backend.is_kernel_driver_active(self._ctx.handle,
+                self._ctx.get_interface(self, interface).bInterfaceNumber)
 
     def detach_kernel_driver(self, interface):
         r"""Detach a kernel driver.
@@ -682,13 +710,15 @@ class Device(object):
         If successful, you will then be able to perform I/O.
         """
         self._ctx.managed_open()
-        self._ctx.backend.detach_kernel_driver(self._ctx.handle, interface)
+        self._ctx.backend.detach_kernel_driver(self._ctx.handle,
+            self._ctx.get_interface(self, interface).bInterfaceNumber)
 
     def attach_kernel_driver(self, interface):
         r"""Re-attach an interface's kernel driver, which was previously
         detached using detach_kernel_driver()."""
         self._ctx.managed_open()
-        self._ctx.backend.attach_kernel_driver(self._ctx.handle, interface)
+        self._ctx.backend.attach_kernel_driver(self._ctx.handle,
+            self._ctx.get_interface(self, interface).bInterfaceNumber)
 
     def __iter__(self):
         r"""Iterate over all configurations of the device."""
@@ -759,7 +789,7 @@ def find(find_all=False, backend = None, custom_match = None, **args):
         if dev.bDeviceClass == 7:
             return True
         for cfg in dev:
-            if util.find_descriptor(cfg, bInterfaceClass=7) is not None:
+            if usb.util.find_descriptor(cfg, bInterfaceClass=7) is not None:
                 return True
 
     printers = find(find_all=True, custom_match = is_printer)
@@ -806,9 +836,9 @@ def find(find_all=False, backend = None, custom_match = None, **args):
                 yield d
 
     if backend is None:
-        import backend.libusb10 as libusb10
-        import backend.libusb01 as libusb01
-        import backend.openusb as openusb
+        import usb.backend.libusb10 as libusb10
+        import usb.backend.libusb01 as libusb01
+        import usb.backend.openusb as openusb
 
         for m in (libusb10, openusb, libusb01):
             backend = m.get_backend()

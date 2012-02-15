@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Wander Lairson Costa 
+# Copyright (C) 2009-2011 Wander Lairson Costa 
 # 
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
@@ -29,13 +29,13 @@
 from ctypes import *
 import ctypes.util
 import os
-import util
-import array
+import usb.backend
+import usb.util
 import sys
-from ..core import USBError
-from .._debug import methodtrace
+from usb.core import USBError
+from usb._debug import methodtrace
+import usb._interop as _interop
 import logging
-from meta import IBackend
 
 __author__ = 'Wander Lairson Costa'
 
@@ -47,7 +47,7 @@ _logger = logging.getLogger('usb.backend.libusb01')
 
 _PC_PATH_MAX = 4
 
-if sys.platform != 'win32':
+if sys.platform != 'win32' and sys.platform != 'cygwin':
     _PATH_MAX = os.pathconf('.', _PC_PATH_MAX)
 else:
     _PATH_MAX = 511
@@ -59,7 +59,7 @@ else:
 class _PackPolicy(object):
     pass
 
-if sys.platform == 'win32':
+if sys.platform == 'win32' or sys.platform == 'cygwin':
     _PackPolicy._pack_ = 1
 
 # Data structures
@@ -161,21 +161,41 @@ _usb_bus._fields_ = [('next', POINTER(_usb_bus)),
 
 _usb_dev_handle = c_void_p
 
+class _DeviceDescriptor:
+    def __init__(self, dev):
+        desc = dev.descriptor
+        self.bLength = desc.bLength
+        self.bDescriptorType = desc.bDescriptorType
+        self.bcdUSB = desc.bcdUSB
+        self.bDeviceClass = desc.bDeviceClass
+        self.bDeviceSubClass = desc.bDeviceSubClass
+        self.bDeviceProtocol = desc.bDeviceProtocol
+        self.bMaxPacketSize0 = desc.bMaxPacketSize0
+        self.idVendor = desc.idVendor
+        self.idProduct = desc.idProduct
+        self.bcdDevice = desc.bcdDevice
+        self.iManufacturer = desc.iManufacturer
+        self.iProduct = desc.iProduct
+        self.iSerialNumber = desc.iSerialNumber
+        self.bNumConfigurations = desc.bNumConfigurations
+        self.address = dev.devnum
+        self.bus = dev.bus[0].location
+
 _lib = None
 
 def _load_library():
-    candidates = ('usb', 'libusb0')
-    for candidate in candidates:
-        libname = ctypes.util.find_library(candidate)
-        if libname is not None: break
+    if sys.platform != 'cygwin':
+        candidates = ('usb-0.1', 'usb', 'libusb0')
+        for candidate in candidates:
+            libname = ctypes.util.find_library(candidate)
+            if libname is not None: break
     else:
         # corner cases
         # cygwin predefines library names with 'cyg' instead of 'lib'
-        if sys.platform == 'cygwin':
-            try:
-                return CDLL('cygusb0.dll')
-            except:
-                _logger.error('Libusb 0 could not be loaded in cygwin', exc_info=True)
+        try:
+            return CDLL('cygusb0.dll')
+        except:
+            _logger.error('Libusb 0 could not be loaded in cygwin', exc_info=True)
 
         raise OSError('USB library could not be found')
     return CDLL(libname)
@@ -214,7 +234,7 @@ def _setup_prototypes(lib):
 
     # int usb_get_descriptor_by_endpoint(usb_dev_handle *udev,
     #                                    int ep,
-    #	                                 unsigned char type,
+    #                                    unsigned char type,
     #                                    unsigned char index,
     #                                    void *buf,
     #                                    int size);
@@ -229,7 +249,7 @@ def _setup_prototypes(lib):
 
     # int usb_get_descriptor(usb_dev_handle *udev,
     #                        unsigned char type,
-    #	                     unsigned char index,
+    #                        unsigned char index,
     #                        void *buf,
     #                        int size);
     lib.usb_get_descriptor.argtypes = [
@@ -295,7 +315,7 @@ def _setup_prototypes(lib):
     # int usb_control_msg(usb_dev_handle *dev,
     #                     int requesttype,
     #                     int request,
-    # 	                  int value,
+    #                     int value,
     #                     int index,
     #                     char *bytes,
     #                     int size,
@@ -361,17 +381,15 @@ def _check(retval):
                 errmsg = os.strerror(-ret)
         else:
             return ret
-    raise USBError(errmsg)
+    raise USBError(errmsg, ret)
 
 # implementation of libusb 0.1.x backend
-class _LibUSB(IBackend):
+class _LibUSB(usb.backend.IBackend):
     @methodtrace(_logger)
     def enumerate_devices(self):
         _check(_lib.usb_find_busses())
         _check(_lib.usb_find_devices())
-
         bus = _lib.usb_get_busses()
-
         while bool(bus):
             dev = bus[0].devices
             while bool(dev):
@@ -381,7 +399,7 @@ class _LibUSB(IBackend):
 
     @methodtrace(_logger)
     def get_device_descriptor(self, dev):
-        return dev.descriptor
+        return _DeviceDescriptor(dev)
 
     @methodtrace(_logger)
     def get_configuration_descriptor(self, dev, config):
@@ -421,6 +439,23 @@ class _LibUSB(IBackend):
     @methodtrace(_logger)
     def set_interface_altsetting(self, dev_handle, intf, altsetting):
         _check(_lib.usb_set_altinterface(dev_handle, altsetting))
+
+    @methodtrace(_logger)
+    def get_configuration(self, dev_handle):
+        bmRequestType = usb.util.build_request_type(
+                                usb.util.CTRL_IN,
+                                usb.util.CTRL_TYPE_STANDARD,
+                                usb.util.CTRL_RECIPIENT_DEVICE
+                            )
+        return self.ctrl_transfer(dev_handle,
+                                  bmRequestType,
+                                  0x08,
+                                  0,
+                                  0,
+                                  1,
+                                  100
+                            )[0]
+                                  
 
     @methodtrace(_logger)
     def claim_interface(self, dev_handle, intf):
@@ -474,7 +509,7 @@ class _LibUSB(IBackend):
                       wIndex,
                       data_or_wLength,
                       timeout):
-        if util.ctrl_direction(bmRequestType) == util.CTRL_OUT:
+        if usb.util.ctrl_direction(bmRequestType) == usb.util.CTRL_OUT:
             address, length = data_or_wLength.buffer_info()
             length *= data_or_wLength.itemsize
             return _check(_lib.usb_control_msg(
@@ -488,19 +523,19 @@ class _LibUSB(IBackend):
                                 timeout
                             ))
         else:
-            buffer = array.array('B', '\x00' * data_or_wLength)
+            data = _interop.as_array((0,) * data_or_wLength)
             read = int(_check(_lib.usb_control_msg(
                                 dev_handle,
                                 bmRequestType,
                                 bRequest,
                                 wValue,
                                 wIndex,
-                                cast(buffer.buffer_info()[0],
+                                cast(data.buffer_info()[0],
                                      c_char_p),
                                 data_or_wLength,
                                 timeout
                             )))
-            return buffer[:read]
+            return data[:read]
 
     @methodtrace(_logger)
     def reset_device(self, dev_handle):
@@ -512,6 +547,7 @@ class _LibUSB(IBackend):
 
     def __write(self, fn, dev_handle, ep, intf, data, timeout):
         address, length = data.buffer_info()
+        length *= data.itemsize
         return int(_check(fn(
                         dev_handle,
                         ep,
@@ -521,8 +557,9 @@ class _LibUSB(IBackend):
                     )))
 
     def __read(self, fn, dev_handle, ep, intf, size, timeout):
-        buffer = array.array('B', '\x00' * size)
-        address, length = buffer.buffer_info()
+        data = _interop.as_array((0,) * size)
+        address, length = data.buffer_info()
+        length *= data.itemsize
         ret = int(_check(fn(
                     dev_handle,
                     ep,
@@ -530,7 +567,7 @@ class _LibUSB(IBackend):
                     length,
                     timeout
                 )))
-        return buffer[:ret]
+        return data[:ret]
 
 def get_backend():
     global _lib
