@@ -39,7 +39,6 @@ from TurtleArt.tautils import debug_output
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
 import nxt
-from nxt.locator import BrickNotFoundError
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
      Ultrasonic, Type
