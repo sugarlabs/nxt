@@ -55,7 +55,7 @@ COLOR_PRESENT = ["#00FF00","#008000"]
 
 ERROR_BRICK = _('please check the connection with the brick')
 ERROR_PORT = _('please check the port')
-ERROR_POWER = _('the value of power must be between -127 to 128')
+ERROR_POWER = _('the value of power must be between -127 to 127')
 ERROR = _('an error has ocurred: check all and try reconect')
 
 class Nxt_plugin(Plugin):
@@ -300,7 +300,7 @@ class Nxt_plugin(Plugin):
         if (self.nxtbrick):
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
-                if (power >= -127) or (power <= 128):
+                if not((power < -127) or (power > 127)):
                     try:
                         Motor(self.nxtbrick, port).turn(power, int(turns*360))
                     except:
@@ -314,7 +314,7 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtsyncmotors(self, power, steering, turns):
         if self.nxtbrick:
-            if (power >= -127) or (power <= 128):
+            if not((power < -127) or (power > 127)):
                 try:
                     motorB = Motor(self.nxtbrick, PORT_B)
                     motorC = Motor(self.nxtbrick, PORT_C)
@@ -396,7 +396,7 @@ class Nxt_plugin(Plugin):
         if (self.nxtbrick):
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
-                if (power >= -127) or (power <= 128):
+                if not((power < -127) or (power > 127)):
                     try:
                         Motor(self.nxtbrick, port).weak_turn(power, 0)
                     except:
