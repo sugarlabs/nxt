@@ -53,7 +53,10 @@ colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
 
-fail = _('Fail')
+ERROR_BRICK = _('please check the connection with the brick')
+ERROR_PORT = _('please check the port')
+ERROR_POWER = _('the value of power must be between -127 to 128')
+ERROR = _('an error has ocurred: check all and try reconect')
 
 class Nxt_plugin(Plugin):
 
@@ -70,10 +73,12 @@ class Nxt_plugin(Plugin):
 
         try:
             self.nxtbrick = nxt.locator.find_one_brick()
-            debug_output("NXT found")
-        except BrickNotFoundError:
+        except:
             pass
-
+        if self.nxtbrick:
+            debug_output(_('NXT found'))
+        else:
+            debug_output(_('NXT not found'))
 
     def setup(self):
 
@@ -292,35 +297,44 @@ class Nxt_plugin(Plugin):
         pass
 
     def _prim_nxtturnmotor(self, port, turns, power):
-        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
-            port = NXT_MOTOR_PORTS[port]
-            try:
-                Motor(self.nxtbrick, port).turn(power, int(turns*360))
-            except:
-                return fail
+        if (self.nxtbrick):
+            if (port in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port]
+                if (power >= -127) or (power <= 128):
+                    try:
+                        Motor(self.nxtbrick, port).turn(power, int(turns*360))
+                    except:
+                        return ERROR
+                else:
+                    return ERROR_POWER
+            else:
+                return ERROR_PORT
         else:
-            return fail
+            return ERROR_BRICK
 
     def _prim_nxtsyncmotors(self, power, steering, turns):
         if self.nxtbrick:
-            try:
-                motorB = Motor(self.nxtbrick, PORT_B)
-                motorC = Motor(self.nxtbrick, PORT_C)
-                syncmotors = SynchronizedMotors(motorB, motorC, steering)
-                syncmotors.turn(power, int(turns*360))
-            except:
-                return fail
+            if (power >= -127) or (power <= 128):
+                try:
+                    motorB = Motor(self.nxtbrick, PORT_B)
+                    motorC = Motor(self.nxtbrick, PORT_C)
+                    syncmotors = SynchronizedMotors(motorB, motorC, steering)
+                    syncmotors.turn(power, int(turns*360))
+                except:
+                    return ERROR
+            else:
+                return ERROR_POWER
         else:
-            return fail
+            return ERROR_BRICK
 
     def _prim_nxtplaytone(self, freq, time):
         if self.nxtbrick:
             try:
                 self.nxtbrick.play_tone(freq, time)
             except:
-                return fail
+                return ERROR
         else:
-            return fail
+            return ERROR_BRICK
 
     def _prim_nxttouch(self):
         return _('touch')
@@ -358,60 +372,77 @@ class Nxt_plugin(Plugin):
     def _prim_nxtreadsensor(self, sensor, port):
         """ Read sensor at specified port"""
         res = -1
-        if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
-            try:
-                port = NXT_SENSOR_PORTS[port]
-                if sensor == _('color'):
-                    res = colors[Color20(self.nxtbrick, port).get_sample()]
-                elif sensor == _('light'):
-                    res = int(Color20(self.nxtbrick, port).get_light())
-                elif sensor == _('ultrasonic'):
-                    res = Ultrasonic(self.nxtbrick, port).get_sample()
-                elif sensor == _('touch'):
-                    res = Touch(self.nxtbrick, port).get_sample()
-            except:
-                pass
+        if (self.nxtbrick):
+            if (port in NXT_SENSOR_PORTS):
+                try:
+                    port = NXT_SENSOR_PORTS[port]
+                    if sensor == _('color'):
+                        res = colors[Color20(self.nxtbrick, port).get_sample()]
+                    elif sensor == _('light'):
+                        res = int(Color20(self.nxtbrick, port).get_light())
+                    elif sensor == _('ultrasonic'):
+                        res = Ultrasonic(self.nxtbrick, port).get_sample()
+                    elif sensor == _('touch'):
+                        res = Touch(self.nxtbrick, port).get_sample()
+                except:
+                    return ERROR
+            else:
+                return ERROR_PORT
+        else:
+            return ERROR_BRICK
         return res
 
     def _prim_nxtstartmotor(self, port, power):
-        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
-            port = NXT_MOTOR_PORTS[port]
-            try:
-                Motor(self.nxtbrick, port).weak_turn(power, 0)
-            except:
-                return fail
+        if (self.nxtbrick):
+            if (port in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port]
+                if (power >= -127) or (power <= 128):
+                    try:
+                        Motor(self.nxtbrick, port).weak_turn(power, 0)
+                    except:
+                        return ERROR
+                else:
+                    return ERROR_POWER
+            else:
+                return ERROR_PORT
         else:
-            return fail
+            return ERROR_BRICK
 
     def _prim_nxtbrake(self, port):
-        if (self.nxtbrick) and (port in NXT_MOTOR_PORTS):
-            port = NXT_MOTOR_PORTS[port]
-            try:
-                Motor(self.nxtbrick, port).brake()
-            except:
-                return fail
+        if (self.nxtbrick):
+            if (port in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port]
+                try:
+                    Motor(self.nxtbrick, port).brake()
+                except:
+                    return ERROR
+            else:
+                return ERROR_PORT
         else:
-            return fail
+            return ERROR_BRICK
 
     def _prim_nxtsetcolor(self, color, port):
-        if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
-            port = NXT_SENSOR_PORTS[port]
-            if color == WHITE:
-                color = Type.COLORFULL
-            elif color == CONSTANTS['red']:
-                color = Type.COLORRED
-            elif color == CONSTANTS['green']:
-                color = Type.COLORGREEN
-            elif color == CONSTANTS['blue']:
-                color = Type.COLORBLUE
+        if (self.nxtbrick):
+            if (port in NXT_SENSOR_PORTS):
+                port = NXT_SENSOR_PORTS[port]
+                if color == WHITE:
+                    color = Type.COLORFULL
+                elif color == CONSTANTS['red']:
+                    color = Type.COLORRED
+                elif color == CONSTANTS['green']:
+                    color = Type.COLORGREEN
+                elif color == CONSTANTS['blue']:
+                    color = Type.COLORBLUE
+                else:
+                    color = Type.COLORNONE
+                try:
+                    Color20(self.nxtbrick, port).set_light_color(color)
+                except:
+                    return ERROR
             else:
-                color = Type.COLORNONE
-            try:
-                Color20(self.nxtbrick, port).set_light_color(color)
-            except:
-                return fail
+                return ERROR_PORT
         else:
-            return fail        
+            return ERROR_BRICK       
 
     def _prim_nxtrefresh(self):
         try:
