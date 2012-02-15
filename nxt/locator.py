@@ -26,34 +26,8 @@ class BrickNotFoundError(Exception):
 class NoBackendError(Exception):
     pass
 
-class Method():
-    """Used to indicate which comm backends should be tried by find_bricks/
-find_one_brick. Any or all can be selected."""
-    def __init__(self, usb=True, bluetooth=True, fantomusb=False, fantombt=False):
-        #new method options MUST default to False!
-        self.usb = usb
-        self.bluetooth = bluetooth
-        self.fantom = fantomusb or fantombt
-        self.fantomusb = fantomusb
-        self.fantombt = fantombt
 
-def find_bricks(silent=False, method=Method()):
-    """Used by find_one_brick to look for bricks ***ADVANCED USERS ONLY***"""
-    methods_available = 0
-    lista_socks = []
-    if method.usb:
-        try:
-            methods_available += 1
-            socks = usbsock.find_bricks(lista)
-            for s in socks:
-                lista_socks.append(s)
-        except:
-            pass
-     
-    return lista_socks
-
-
-def find_one_brick(host=None, name=None, silent=False, strict=None, debug=False, method=None, confpath=None):
+def find_one_brick():
     """Use to find one brick. The host and name args limit the search to 
 a given MAC or brick name. Set silent to True to stop nxt-python from 
 printing anything during the search. This function by default 
@@ -67,15 +41,20 @@ specifies the location of the configuration file which brick location
 information will be read from if no brick location directives (host, 
 name, strict, or method) are provided."""
 
-
-    method = Method(usb=True, bluetooth=False, fantomusb=False, fantombt=False)
-    flist = find_bricks(silent, method)
-    #print 'lista3 ', lista
     b = None
-    if not(flist == []):
-        s = flist[0]
-        #if not (s == None):
-        b = s.connect()
+    methods_available = 1
+    lista_socks = []
+    try:
+        socks = usbsock.find_bricks(lista)
+        for s in socks:
+            lista_socks.append(s)
+        
+        if not(lista_socks == []):
+            s = lista_socks[0]
+            b = s.connect()
+    except:
+        pass
+     
     return b
 
 
