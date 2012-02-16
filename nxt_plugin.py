@@ -39,6 +39,7 @@ from TurtleArt.tautils import debug_output
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
 import nxt
+from nxt.locator import find_one_brick
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
      Ultrasonic, Type
@@ -70,10 +71,8 @@ class Nxt_plugin(Plugin):
         BUS=="usb", ATTRS{idVendor}=="0694", ATTRS{idProduct}=="0002", MODE="0666"
         """
 
-        try:
-            self.nxtbrick = nxt.locator.find_one_brick()
-        except:
-            pass
+        self.nxtbrick = nxt.locator.find_one_brick()
+
         if self.nxtbrick:
             debug_output(_('NXT found'))
         else:
@@ -444,12 +443,13 @@ class Nxt_plugin(Plugin):
             return ERROR_BRICK       
 
     def _prim_nxtrefresh(self):
-        try:
-            if not(self.nxtbrick == None):
+        if not(self.nxtbrick == None):
+            try:
                 self.nxtbrick.__del__()
-            self.nxtbrick = nxt.locator.find_one_brick()
-        except:
-            self.nxtbrick = None
+            except:
+                pass
+
+        self.nxtbrick = nxt.locator.find_one_brick()
 
         self.change_color_blocks()
 
