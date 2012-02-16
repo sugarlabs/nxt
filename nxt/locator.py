@@ -44,47 +44,18 @@ name, strict, or method) are provided."""
     b = None
     methods_available = 1
     lista_socks = []
-    try:
-        socks = usbsock.find_bricks(lista)
-        for s in socks:
-            lista_socks.append(s)
-        
-        if not(lista_socks == []):
-            s = lista_socks[0]
-            b = s.connect()
-    except:
-        pass
-     
-    return b
-
-
-    """for s in flist:
+    socks = usbsock.find_bricks(lista)
+    for s in socks:
+        lista_socks.append(s)
+    
+    if not(lista_socks == []):
+        s = lista_socks[0]
         try:
-            if host and 'host' in dir(s) and s.host != host:
-                if debug:
-                    print "Warning: the brick found does not match the host provided (s.host)."
-                if strict: continue
             b = s.connect()
-            info = b.get_device_info()
-            print 'info: ', info
-            if host and info[1] != host:
-                if debug:
-                    print "Warning: the brick found does not match the host provided (get_device_info)."
-                if strict:
-                    s.close()
-                    continue
-            if name and info[0].strip('\0') != name:
-                if debug:
-                    print "Warning; the brick found does not match the name provided."
-                if strict:
-                    s.close()
-                    continue
-            return b
         except:
-            if debug:
-                traceback.print_exc()
-                print "Failed to connect to possible brick"
-    raise BrickNotFoundError"""
+            pass
+
+    return b
 
 
 def server_brick(host, port = 2727):

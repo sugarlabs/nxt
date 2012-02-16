@@ -82,11 +82,9 @@ def find_bricks(lista):
     if not(lista == []):
         b_a = lista[0]
         try:
-            #print 'pass'
             b_a.close()
         except:
             pass
-            #print 'cannot close the anterior brick'
     lista = []
     for bus in usb.busses():
         for device in bus.devices:
