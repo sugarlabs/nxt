@@ -22,6 +22,7 @@
 
 import os
 import sys
+import time
 
 from gettext import gettext as _
 
@@ -77,6 +78,10 @@ class Nxt_plugin(Plugin):
             debug_output(_('NXT found'))
         else:
             debug_output(_('NXT not found'))
+
+        self.anterior = time.time()
+
+        self.res = -1
 
     def setup(self):
 
@@ -369,24 +374,25 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtreadsensor(self, sensor, port):
         """ Read sensor at specified port"""
-        res = -1
-        if (self.nxtbrick):
-            if (port in NXT_SENSOR_PORTS):
+        if (port in NXT_SENSOR_PORTS):
+            actual = time.time()
+            if ((actual - self.anterior) > MINIMO_INTERVALO) and (self.nxtbrick):
+                self.anterior = actual 
                 port = NXT_SENSOR_PORTS[port]
                 try:
                     if sensor == _('color'):
-                        res = colors[Color20(self.nxtbrick, port).get_sample()]
+                        self.res = colors[Color20(self.nxtbrick, port).get_sample()]
                     elif sensor == _('light'):
-                        res = int(Color20(self.nxtbrick, port).get_light())
+                        self.res = int(Color20(self.nxtbrick, port).get_light())
                     elif sensor == _('ultrasonic'):
-                        res = Ultrasonic(self.nxtbrick, port).get_sample()
+                        self.res = Ultrasonic(self.nxtbrick, port).get_sample()
                     elif sensor == _('touch'):
-                        res = Touch(self.nxtbrick, port).get_sample()
+                        self.res = Touch(self.nxtbrick, port).get_sample()
                 except:
                     pass
-            else:
-                return ERROR_PORT
-        return res
+            return self.res
+        else:
+            return ERROR_PORT
 
     def _prim_nxtstartmotor(self, port, power):
         if (self.nxtbrick):
