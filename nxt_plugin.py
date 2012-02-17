@@ -53,10 +53,10 @@ colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
 
-ERROR_BRICK = _('please check the connection with the brick')
-ERROR_PORT = _('please check the port')
-ERROR_POWER = _('the value of power must be between -127 to 127')
-ERROR = _('an error has ocurred: check all and try reconect')
+ERROR_BRICK = _('Please check the connection with the brick.')
+ERROR_PORT = _('Please check the port.')
+ERROR_POWER = _('The value of power must be between -127 to 127.')
+ERROR = _('An error has ocurred: check all and try reconnect.')
 
 class Nxt_plugin(Plugin):
 
@@ -89,7 +89,7 @@ class Nxt_plugin(Plugin):
                      style='basic-style',
                      label=_('refresh NXT'),
                      prim_name='nxtrefresh',
-                     help_string=_('search for a connected NXT brick'))
+                     help_string=_('Search for a connected NXT brick.'))
         self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
             primitive_dictionary['nxtrefresh']())
 
@@ -98,7 +98,7 @@ class Nxt_plugin(Plugin):
                   style='basic-style-2arg',
                   label=[_('play tone'), _('freq'), _('time')],
                   default=[433, 500],
-                  help_string=_('play a tone at freq for time'),
+                  help_string=_('Play a tone at freq for time.'),
                   prim_name='nxtplaytone')
         self.tw.lc.def_prim('nxtplaytone', 2,
             lambda self, x, y: primitive_dictionary['nxtplaytone'](x, y))
@@ -157,7 +157,7 @@ class Nxt_plugin(Plugin):
                   style='basic-style-2arg',
                   label=[_('start motor'), _('port'), _('power')],
                   default=['None', 100],
-                  help_string=_('run a motor forever'),
+                  help_string=_('Run a motor forever.'),
                   prim_name='nxtstartmotor')
         self.tw.lc.def_prim('nxtstartmotor', 2, lambda self, x, y:
             primitive_dictionary['nxtstartmotor'](x, y))
@@ -167,7 +167,7 @@ class Nxt_plugin(Plugin):
                   style='basic-style-1arg',
                   label=_('brake motor'),
                   default=['None'],
-                  help_string=_('brake a specified motor'),
+                  help_string=_('Stop a specified motor.'),
                   prim_name='nxtbrake')
         self.tw.lc.def_prim('nxtbrake', 1, lambda self, x:
             primitive_dictionary['nxtbrake'](x))
@@ -239,7 +239,7 @@ class Nxt_plugin(Plugin):
         palette.add_block('nxtreadsensor',
                   style='number-style-block',
                   label=[_('read'), _('sensor'), _('port')],
-                  help_string=_('read sensor output'),
+                  help_string=_('Read sensor output.'),
                   prim_name='nxtreadsensor')
         self.tw.lc.def_prim('nxtreadsensor', 2,
             lambda self, x, y:
@@ -258,7 +258,7 @@ class Nxt_plugin(Plugin):
         palette.add_block('nxtsetcolor',
                   style='basic-style-2arg',
                   label=[_('set light'), _('color'), _('port')],
-                  help_string=_('set color sensor light'),
+                  help_string=_('Set color sensor light.'),
                   prim_name='nxtsetcolor')
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
             primitive_dictionary['nxtsetcolor'](x, y))
