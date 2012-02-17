@@ -383,7 +383,7 @@ class Nxt_plugin(Plugin):
                     elif sensor == _('touch'):
                         res = Touch(self.nxtbrick, port).get_sample()
                 except:
-                    return pass
+                    pass
             else:
                 return ERROR_PORT
         return res
