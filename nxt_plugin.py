@@ -370,24 +370,20 @@ class Nxt_plugin(Plugin):
     def _prim_nxtreadsensor(self, sensor, port):
         """ Read sensor at specified port"""
         res = -1
-        if (self.nxtbrick):
-            if (port in NXT_SENSOR_PORTS):
-                try:
-                    port = NXT_SENSOR_PORTS[port]
-                    if sensor == _('color'):
-                        res = colors[Color20(self.nxtbrick, port).get_sample()]
-                    elif sensor == _('light'):
-                        res = int(Color20(self.nxtbrick, port).get_light())
-                    elif sensor == _('ultrasonic'):
-                        res = Ultrasonic(self.nxtbrick, port).get_sample()
-                    elif sensor == _('touch'):
-                        res = Touch(self.nxtbrick, port).get_sample()
-                except:
-                    return ERROR
-            else:
-                return ERROR_PORT
-        else:
-            return ERROR_BRICK
+        if (self.nxtbrick) and (port in NXT_SENSOR_PORTS):
+            try:
+                port = NXT_SENSOR_PORTS[port]
+                if sensor == _('color'):
+                    res = colors[Color20(self.nxtbrick, port).get_sample()]
+                elif sensor == _('light'):
+                    res = int(Color20(self.nxtbrick, port).get_light())
+                elif sensor == _('ultrasonic'):
+                    res = Ultrasonic(self.nxtbrick, port).get_sample()
+                elif sensor == _('touch'):
+                    res = Touch(self.nxtbrick, port).get_sample()
+            except:
+                return pass
+
         return res
 
     def _prim_nxtstartmotor(self, port, power):
