@@ -59,6 +59,8 @@ ERROR_PORT = _('Please check the port.')
 ERROR_POWER = _('The value of power must be between -127 to 127.')
 ERROR = _('An error has ocurred: check all and try reconnect.')
 
+MINIMO_INTERVALO = 0.2
+
 class Nxt_plugin(Plugin):
 
     def __init__(self, parent):
