@@ -57,6 +57,20 @@ name, strict, or method) are provided."""
 
     return b
 
+def find_bricks():
+    """Use to find all bricks connected"""
+
+    methods_available = 1
+    lista_socks = []
+    socks = usbsock.find_bricks(lista)
+    for s in socks:
+        try:
+            b = s.connect()
+            lista_socks.append(b)
+        except:
+            pass
+
+    return lista_socks
 
 def server_brick(host, port = 2727):
     sock = ipsock.IpSock(host, port)
