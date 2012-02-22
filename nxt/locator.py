@@ -18,14 +18,14 @@ import traceback, ConfigParser
 import usbsock
 import ipsock
 
-lista = []
+bricks_list = []
+connections_list = []
 
 class BrickNotFoundError(Exception):
     pass
 
 class NoBackendError(Exception):
     pass
-
 
 def find_one_brick():
     """Use to find one brick. The host and name args limit the search to 
@@ -41,36 +41,47 @@ specifies the location of the configuration file which brick location
 information will be read from if no brick location directives (host, 
 name, strict, or method) are provided."""
 
-    b = None
     methods_available = 1
-    lista_socks = []
-    socks = usbsock.find_bricks(lista)
-    for s in socks:
-        lista_socks.append(s)
-    
-    if not(lista_socks == []):
-        s = lista_socks[0]
+    global connections_list
+    for c in connections_list:
         try:
-            b = s.connect()
+            c.__del__()
         except:
             pass
-
+    connections_list = []
+    socks = usbsock.find_bricks(bricks_list)
+    for s in socks:
+        try:
+            b = s.connect()
+            connections_list.append(b)
+        except:
+            pass
+    b = None
+    if not(connections_list == []):
+        b = connections_list[0]
+        
     return b
 
 def find_bricks():
     """Use to find all bricks connected"""
 
     methods_available = 1
-    lista_socks = []
-    socks = usbsock.find_bricks(lista)
+    global connections_list
+    for c in connections_list:
+        try:
+            c.__del__()
+        except:
+            pass
+    connections_list = []
+    socks = usbsock.find_bricks(bricks_list)
     for s in socks:
         try:
             b = s.connect()
-            lista_socks.append(b)
+            connections_list.append(b)
         except:
             pass
 
-    return lista_socks
+    return connections_list
 
 def server_brick(host, port = 2727):
     sock = ipsock.IpSock(host, port)

@@ -449,11 +449,6 @@ class Nxt_plugin(Plugin):
             return ERROR_BRICK       
 
     def _prim_nxtrefresh(self):
-        if not(self.nxtbrick == None):
-            try:
-                self.nxtbrick.__del__()
-            except:
-                pass
 
         self.nxtbrick = nxt.locator.find_one_brick()
 
