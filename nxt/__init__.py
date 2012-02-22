@@ -12,6 +12,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-from nxt.locator import find_one_brick
+from nxt.locator import find_one_brick, find_bricks
 from nxt.motor import *
 from nxt.sensor import *
