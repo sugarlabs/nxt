@@ -12,14 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import sys
-import os
-import traceback, ConfigParser
-import usbsock
-import ipsock
-
-bricks_list = []
-connections_list = []
+import traceback, ConfigParser, os
 
 class BrickNotFoundError(Exception):
     pass
@@ -27,7 +20,67 @@ class BrickNotFoundError(Exception):
 class NoBackendError(Exception):
     pass
 
-def find_one_brick():
+class Method():
+    """Used to indicate which comm backends should be tried by find_bricks/
+find_one_brick. Any or all can be selected."""
+    def __init__(self, usb=True, bluetooth=True, fantomusb=False, fantombt=False):
+        #new method options MUST default to False!
+        self.usb = usb
+        self.bluetooth = bluetooth
+        self.fantom = fantomusb or fantombt
+        self.fantomusb = fantomusb
+        self.fantombt = fantombt
+
+def find_bricks(host=None, name=None, silent=False, method=Method()):
+    """Used by find_one_brick to look for bricks ***ADVANCED USERS ONLY***"""
+    methods_available = 0
+
+    if method.usb:
+        try:
+            import usbsock
+            methods_available += 1
+            socks = usbsock.find_bricks(host, name)
+            for s in socks:
+                yield s
+        except ImportError:
+            import sys
+            if not silent: print >>sys.stderr, "USB module unavailable, not searching there"
+    
+    if method.bluetooth:
+        try:
+            import bluesock
+            methods_available += 1
+            try:
+                socks = bluesock.find_bricks(host, name)
+                for s in socks:
+                    yield s
+            except (bluesock.bluetooth.BluetoothError, IOError): #for cases such as no adapter, bluetooth throws IOError, not BluetoothError
+                pass
+        except ImportError:
+            import sys
+            if not silent: print >>sys.stderr, "Bluetooth module unavailable, not searching there"
+    
+    if method.fantom:
+        try:
+            import fantomsock
+            methods_available += 1
+            if method.fantomusb:
+                usbsocks = fantomsock.find_bricks(host, name, False)
+                for s in usbsocks:
+                    yield s
+            if method.fantombt:
+                btsocks = fantomsock.find_bricks(host, name, True)
+                for s in btsocks:
+                    yield s
+        except ImportError:
+            import sys
+            if not silent: print >>sys.stderr, "Fantom module unavailable, not searching there"
+    
+    if methods_available == 0:
+        raise NoBackendError("No selected backends are available! Did you install the comm modules?")
+
+
+def find_one_brick(host=None, name=None, silent=False, strict=None, debug=False, method=None, confpath=None):
     """Use to find one brick. The host and name args limit the search to 
 a given MAC or brick name. Set silent to True to stop nxt-python from 
 printing anything during the search. This function by default 
@@ -40,50 +93,52 @@ to only look for devices which match the args provided. The confpath arg
 specifies the location of the configuration file which brick location 
 information will be read from if no brick location directives (host, 
 name, strict, or method) are provided."""
+    if debug and silent:
+        silent=False
+        print "silent and debug can't both be set; giving debug priority"
 
-    methods_available = 1
-    global connections_list
-    for c in connections_list:
+    conf = read_config(confpath, debug)
+    if not (host or name or strict or method):
+        host	= conf.get('Brick', 'host')
+        name	= conf.get('Brick', 'name')
+        strict	= bool(int(conf.get('Brick', 'strict')))
+        method	= eval('Method(%s)' % conf.get('Brick', 'method'))
+    if not strict: strict = True
+    if not method: method = Method()
+    if debug:
+        print "Host: %s Name: %s Strict: %s" % (host, name, str(strict))
+        print "USB: %s BT: %s Fantom: %s FUSB: %s FBT: %s" % (method.usb, method.bluetooth, method.fantom, method.fantombt, method.fantomusb)
+    
+    for s in find_bricks(host, name, silent, method):
         try:
-            c.__del__()
-        except:
-            pass
-    connections_list = []
-    socks = usbsock.find_bricks(bricks_list)
-    for s in socks:
-        try:
+            if host and 'host' in dir(s) and s.host != host:
+                if debug:
+                    print "Warning: the brick found does not match the host provided (s.host)."
+                if strict: continue
             b = s.connect()
-            connections_list.append(b)
+            info = b.get_device_info()
+            if host and info[1] != host:
+                if debug:
+                    print "Warning: the brick found does not match the host provided (get_device_info)."
+                if strict:
+                    s.close()
+                    continue
+            if name and info[0].strip('\0') != name:
+                if debug:
+                    print "Warning; the brick found does not match the name provided."
+                if strict:
+                    s.close()
+                    continue
+            return b
         except:
-            pass
-    b = None
-    if not(connections_list == []):
-        b = connections_list[0]
-        
-    return b
+            if debug:
+                traceback.print_exc()
+                print "Failed to connect to possible brick"
+    raise BrickNotFoundError
 
-def find_bricks():
-    """Use to find all bricks connected"""
-
-    methods_available = 1
-    global connections_list
-    for c in connections_list:
-        try:
-            c.__del__()
-        except:
-            pass
-    connections_list = []
-    socks = usbsock.find_bricks(bricks_list)
-    for s in socks:
-        try:
-            b = s.connect()
-            connections_list.append(b)
-        except:
-            pass
-
-    return connections_list
 
 def server_brick(host, port = 2727):
+    import ipsock
     sock = ipsock.IpSock(host, port)
     return sock.connect()
 

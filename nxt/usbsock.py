@@ -19,7 +19,6 @@ from nxt.brick import Brick
 ID_VENDOR_LEGO = 0x0694
 ID_PRODUCT_NXT = 0x0002
 
-
 class USBSock(object):
     'Object for USB connection to NXT'
 
@@ -37,27 +36,30 @@ class USBSock(object):
 
     def connect(self):
         'Use to connect to NXT.'
+        if self.debug:
+            print 'Connecting via USB...'
         config = self.device.configurations[0]
         iface = config.interfaces[0][0]
-        self.handle = None
-
         self.blk_out, self.blk_in = iface.endpoints
         self.handle = self.device.open()
         self.handle.setConfiguration(1)
         self.handle.claimInterface(0)
-
-        #if os.name != 'nt': # http://code.google.com/p/nxt-python/issues/detail?id=33
-        #    self.handle.reset()
-        #if self.debug:
-        #    print 'Connected.'
+        if os.name != 'nt': # http://code.google.com/p/nxt-python/issues/detail?id=33
+            self.handle.reset()
+        if self.debug:
+            print 'Connected.'
         return Brick(self)
 
     def close(self):
         'Use to close the connection.'
+        if self.debug:
+            print 'Closing USB connection...'
         self.device = None
         self.handle = None
         self.blk_out = None
         self.blk_in = None
+        if self.debug:
+            print 'USB connection closed.'
 
     def send(self, data):
         'Use to send raw data over USB connection ***ADVANCED USERS ONLY***'
@@ -75,19 +77,11 @@ class USBSock(object):
         # NOTE: bulkRead returns a tuple of ints ... make it sane
         return ''.join(chr(d & 0xFF) for d in data)
 
-def find_bricks(lista):
+def find_bricks(host=None, name=None):
     'Use to look for NXTs connected by USB only. ***ADVANCED USERS ONLY***'
     # FIXME: probably should check host (MAC)
     # if anyone knows how to do this, please file a bug report
-    for b in lista:
-        try:
-            b.close()
-        except:
-            pass
-    lista = []
     for bus in usb.busses():
         for device in bus.devices:
             if device.idVendor == ID_VENDOR_LEGO and device.idProduct == ID_PRODUCT_NXT:
-                lista.append(USBSock(device))
-    return lista
-
+                yield USBSock(device)
