@@ -450,7 +450,10 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtrefresh(self):
 
-        self.nxtbrick = nxt.locator.find_one_brick()
+        try:
+            self.nxtbrick.get_device_info()
+        except:
+            self.nxtbrick = nxt.locator.find_one_brick()
 
         self.change_color_blocks()
 
