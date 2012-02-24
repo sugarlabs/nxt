@@ -134,7 +134,7 @@ name, strict, or method) are provided."""
             if debug:
                 traceback.print_exc()
                 print "Failed to connect to possible brick"
-    raise BrickNotFoundError
+    #raise BrickNotFoundError
 
 
 def server_brick(host, port = 2727):
