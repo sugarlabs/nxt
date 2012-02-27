@@ -85,6 +85,8 @@ class Nxt_plugin(Plugin):
 
         self.res = -1
 
+        self.motor_pos = 0
+
     def setup(self):
 
         
@@ -270,6 +272,24 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
             primitive_dictionary['nxtsetcolor'](x, y))
 
+        primitive_dictionary['nxtmotorreset'] = self._prim_nxtmotorreset
+        palette.add_block('nxtmotorreset',
+                  style='basic-style-1arg',
+                  label=_('reset motor'),
+                  default=['None'],
+                  help_string=_('Reset the motor counter.'),
+                  prim_name='nxtmotorreset')
+        self.tw.lc.def_prim('nxtmotorreset', 1, lambda self, x:
+            primitive_dictionary['nxtmotorreset'](x))
+
+        primitive_dictionary['nxtmotorposition'] = self._prim_nxtmotorposition
+        palette.add_block('nxtmotorposition',
+                  label=_('motor position'),
+                  default=['None'],
+                  help_string=_('Get the motor position.'),
+                  prim_name='nxtmotorposition')
+        self.tw.lc.def_prim('nxtmotorposition', 1, lambda self, x:
+            primitive_dictionary['nxtmotorposition'](x))
 
         self.change_color_blocks()
         
@@ -446,7 +466,39 @@ class Nxt_plugin(Plugin):
             else:
                 return ERROR_PORT
         else:
-            return ERROR_BRICK       
+            return ERROR_BRICK  
+
+    def _prim_nxtmotorreset(self, port):
+        if (self.nxtbrick):
+            if (port in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port]
+                try:
+                    m = Motor(self.nxtbrick, port)
+                    t = m.get_tacho()
+                    self.motor_pos = t.tacho_count
+                    m.idle()
+                except:
+                    return ERROR
+            else:
+                return ERROR_PORT
+        else:
+            return ERROR_BRICK
+
+    def _prim_nxtmotorposition(self, port):
+        if (self.nxtbrick):
+            if (port in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port]
+                try:
+                    m = Motor(self.nxtbrick, port)
+                    t = m.get_tacho()
+                    d = t.tacho_count - self.motor_pos
+                    return d
+                except:
+                    return ERROR
+            else:
+                return ERROR_PORT
+        else:
+            return ERROR_BRICK         
 
     def _prim_nxtrefresh(self):
 
