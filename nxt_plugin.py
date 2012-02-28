@@ -66,7 +66,7 @@ class Nxt_plugin(Plugin):
     def __init__(self, parent):
         self.tw = parent
         self.nxtbrick = None
-        
+
         """
         Adding a rule to /etc/udev/rules.d call: /etc/udev/rules.d/99-lego.rules
         with:
@@ -89,7 +89,7 @@ class Nxt_plugin(Plugin):
 
     def setup(self):
 
-        
+
         palette = make_palette('nxt', ["#00FF00","#008000"],
                     _('Palette of LEGO NXT blocks'))
 
@@ -292,7 +292,7 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtmotorposition'](x))
 
         self.change_color_blocks()
-        
+
 
     def start(self):
         # This gets called by the start button
@@ -363,7 +363,7 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxttouch(self):
         return _('touch')
-        
+
     def _prim_nxtultrasonic(self):
         return _('ultrasonic')
 
@@ -399,7 +399,7 @@ class Nxt_plugin(Plugin):
         if (port in NXT_SENSOR_PORTS):
             actual = time.time()
             if ((actual - self.anterior) > MINIMO_INTERVALO) and (self.nxtbrick):
-                self.anterior = actual 
+                self.anterior = actual
                 port = NXT_SENSOR_PORTS[port]
                 try:
                     if sensor == _('color'):
@@ -466,7 +466,7 @@ class Nxt_plugin(Plugin):
             else:
                 return ERROR_PORT
         else:
-            return ERROR_BRICK  
+            return ERROR_BRICK
 
     def _prim_nxtmotorreset(self, port):
         if (self.nxtbrick):
@@ -498,7 +498,7 @@ class Nxt_plugin(Plugin):
             else:
                 return ERROR_PORT
         else:
-            return ERROR_BRICK         
+            return ERROR_BRICK
 
     def _prim_nxtrefresh(self):
 
