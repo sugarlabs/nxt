@@ -284,6 +284,7 @@ class Nxt_plugin(Plugin):
 
         primitive_dictionary['nxtmotorposition'] = self._prim_nxtmotorposition
         palette.add_block('nxtmotorposition',
+                  style='number-style-1arg',
                   label=_('motor position'),
                   default=['None'],
                   help_string=_('Get the motor position.'),
