@@ -48,9 +48,9 @@ import nxt
 from nxt.locator import find_one_brick
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
-     Ultrasonic, Type
+     Ultrasonic, Type, Sound
 
-NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3}
+NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4}
 NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
 NXT_SENSOR_PORTS = {_('PORT 1'): PORT_1, _('PORT 2'): PORT_2, _('PORT 3'): PORT_3, _('PORT 4'): PORT_4}
 
@@ -212,6 +212,15 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtlight')
         self.tw.lc.def_prim('nxtlight', 0,
             lambda self: primitive_dictionary['nxtlight']())
+
+        primitive_dictionary['nxtsound'] = self._prim_nxtsound
+        palette.add_block('nxtsound',
+                  style='box-style',
+                  label=_('sound'),
+                  help_string=_('sound sensor'),
+                  prim_name='nxtsound')
+        self.tw.lc.def_prim('nxtsound', 0,
+            lambda self: primitive_dictionary['nxtsound']())
 
         primitive_dictionary['nxtport2'] = self._prim_nxtport2
         palette.add_block('nxtport2',
@@ -379,6 +388,9 @@ class Nxt_plugin(Plugin):
     def _prim_nxtlight(self):
         return _('light')
 
+    def _prim_nxtsound(self):
+        return _('sound')
+
     def _prim_nxtport1(self):
         return _('PORT 1')
 
@@ -416,6 +428,8 @@ class Nxt_plugin(Plugin):
                         self.res = Ultrasonic(self.nxtbrick, port).get_sample()
                     elif sensor == _('touch'):
                         self.res = Touch(self.nxtbrick, port).get_sample()
+                    elif sensor == _('sound'):
+                        self.res = Sound(self.nxtbrick, port).get_sample()
                 except:
                     pass
             return self.res
