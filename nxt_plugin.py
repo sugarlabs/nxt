@@ -59,6 +59,7 @@ colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
 
+
 ERROR_BRICK = _('Please check the connection with the brick.')
 ERROR_PORT = _('Please check the port.')
 ERROR_POWER = _('The value of power must be between -127 to 127.')
@@ -87,15 +88,13 @@ class Nxt_plugin(Plugin):
             debug_output(_('NXT not found'))
 
         self.anterior = time.time()
-
         self.res = -1
-
         self.motor_pos = 0
 
     def setup(self):
 
         # Palette of Motors
-        palette_motors = make_palette('nxt-motors', ["#00FF00","#008000"],
+        palette_motors = make_palette('nxt-motors', COLOR_NOTPRESENT,
                     _('Palette of LEGO NXT blocks of motors'))
 
         primitive_dictionary['nxtrefresh'] = self._prim_nxtrefresh
