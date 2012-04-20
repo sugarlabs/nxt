@@ -537,8 +537,8 @@ class Nxt_plugin(Plugin):
 
         self.change_color_blocks()
 
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt-motors'), regenerate=True, show=True)
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt-sensors'), regenerate=True, show=True)
+        self.tw.show_toolbar_palette(palette_name_to_index('nxt-motors'), regenerate=True, show=False)
+        self.tw.show_toolbar_palette(palette_name_to_index('nxt-sensors'), regenerate=True, show=False)
 
     def change_color_blocks(self):
         motors_blocks = palette_blocks[palette_name_to_index('nxt-motors')]
@@ -548,17 +548,16 @@ class Nxt_plugin(Plugin):
         for block in nxt_palette_blocks:
             if (self.nxtbrick) or (block == 'nxtrefresh'):
                 BOX_COLORS[block] = COLOR_PRESENT
-                special_block_colors[block] = COLOR_PRESENT
             else:
                 BOX_COLORS[block] = COLOR_NOTPRESENT
-                special_block_colors[block] = COLOR_NOTPRESENT
+            block.refresh()
 
         for block in self.tw.block_list.list:
             if block.type in ['proto', 'block']:
                 if block.name in nxt_palette_blocks:
                     if (self.nxtbrick) or (block.name == 'nxtrefresh'):
-                        block.set_colors(COLOR_PRESENT)
+                        BOX_COLORS[block] = COLOR_PRESENT
                     else:
-                        block.set_colors(COLOR_NOTPRESENT)
-
+                        BOX_COLORS[block] = COLOR_NOTPRESENT
+                    block.refresh()
 
