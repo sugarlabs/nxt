@@ -545,19 +545,12 @@ class Nxt_plugin(Plugin):
         sensors_blocks = palette_blocks[palette_name_to_index('nxt-sensors')]
         nxt_palette_blocks = motors_blocks + sensors_blocks
 
-        for block in nxt_palette_blocks:
-            if (self.nxtbrick) or (block == 'nxtrefresh'):
-                BOX_COLORS[block] = COLOR_PRESENT
-            else:
-                BOX_COLORS[block] = COLOR_NOTPRESENT
-            block.refresh()
-
         for block in self.tw.block_list.list:
             if block.type in ['proto', 'block']:
                 if block.name in nxt_palette_blocks:
                     if (self.nxtbrick) or (block.name == 'nxtrefresh'):
-                        BOX_COLORS[block] = COLOR_PRESENT
+                        BOX_COLORS[block.name] = COLOR_PRESENT[:]
                     else:
-                        BOX_COLORS[block] = COLOR_NOTPRESENT
+                        BOX_COLORS[block.name] = COLOR_NOTPRESENT[:]
                     block.refresh()
 
