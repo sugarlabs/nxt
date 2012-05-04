@@ -37,7 +37,7 @@ from TurtleArt.tapalette import make_palette
 from TurtleArt.tapalette import palette_name_to_index
 from TurtleArt.tapalette import special_block_colors
 from TurtleArt.tapalette import palette_blocks
-from TurtleArt.talogo import primitive_dictionary
+from TurtleArt.talogo import primitive_dictionary, logoerror
 from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS, BOX_COLORS
 from TurtleArt.tautils import debug_output
 
@@ -375,13 +375,13 @@ class Nxt_plugin(Plugin):
                         m.turn(power, int(turns*360), brake=True)
                         m.brake()
                     except:
-                        return ERROR
+                        raise logoerror(ERROR)
                 else:
-                    return ERROR_POWER
+                    raise logoerror(ERROR_POWER)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsyncmotors(self, power, steering, turns):
         if self.nxtbrick:
@@ -392,20 +392,20 @@ class Nxt_plugin(Plugin):
                     syncmotors = SynchronizedMotors(motorB, motorC, steering)
                     syncmotors.turn(power, int(turns*360))
                 except:
-                    return ERROR
+                    raise logoerror(ERROR)
             else:
-                return ERROR_POWER
+                raise logoerror(ERROR_POWER)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtplaytone(self, freq, time):
         if self.nxtbrick:
             try:
                 self.nxtbrick.play_tone(freq, time)
             except:
-                return ERROR
+                raise logoerror(ERROR)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxttouch(self):
         return _('touch')
@@ -465,7 +465,7 @@ class Nxt_plugin(Plugin):
                     pass
             return self.res
         else:
-            return ERROR_PORT
+            raise logoerror(ERROR_PORT)
 
     def _prim_nxtstartmotor(self, port, power):
         if self.nxtbrick:
@@ -476,13 +476,13 @@ class Nxt_plugin(Plugin):
                         m = Motor(self.nxtbrick, port)
                         m.weak_turn(power, 0)
                     except:
-                        return ERROR
+                        raise logoerror(ERROR)
                 else:
-                    return ERROR_POWER
+                    raise logoerror(ERROR_POWER)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtbrake(self, port):
         if self.nxtbrick:
@@ -492,11 +492,11 @@ class Nxt_plugin(Plugin):
                     m = Motor(self.nxtbrick, port)
                     m.brake()
                 except:
-                    return ERROR
+                    raise logoerror(ERROR)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsetcolor(self, color, port):
         if self.nxtbrick:
@@ -515,11 +515,11 @@ class Nxt_plugin(Plugin):
                 try:
                     Color20(self.nxtbrick, port).set_light_color(color)
                 except:
-                    return ERROR
+                    raise logoerror(ERROR)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorreset(self, port):
         if self.nxtbrick:
@@ -531,11 +531,11 @@ class Nxt_plugin(Plugin):
                     self.motor_pos = t.tacho_count
                     m.idle()
                 except:
-                    return ERROR
+                    raise logoerror(ERROR)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorposition(self, port):
         if self.nxtbrick:
@@ -544,14 +544,13 @@ class Nxt_plugin(Plugin):
                 try:
                     m = Motor(self.nxtbrick, port)
                     t = m.get_tacho()
-                    d = t.tacho_count - self.motor_pos
-                    return d
+                    return (t.tacho_count - self.motor_pos)
                 except:
-                    return ERROR
+                    raise logoerror(ERROR)
             else:
-                return ERROR_PORT
+                raise logoerror(ERROR_PORT)
         else:
-            return ERROR_BRICK
+            raise logoerror(ERROR_BRICK)
 
     def _prim_nxtrefresh(self):
         try:
