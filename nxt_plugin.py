@@ -114,9 +114,9 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
         palette_motors.add_block('nxtplaytone',
                   style='basic-style-2arg',
-                  label=[_('play tone'), _('freq'), _('time')],
+                  label=[_('play tone'), _('frequency'), _('time')],
                   default=[433, 500],
-                  help_string=_('Play a tone at freq for time.'),
+                  help_string=_('Play a tone at frequency for time.'),
                   prim_name='nxtplaytone')
         self.tw.lc.def_prim('nxtplaytone', 2, lambda self, x, y:
             primitive_dictionary['nxtplaytone'](x, y))
