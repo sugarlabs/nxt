@@ -332,6 +332,16 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtsetcolor'](x, y))
         BOX_COLORS['nxtsetcolor'] = COLOR[:]
 
+        primitive_dictionary['nxtbattery'] = self._prim_nxtbattery
+        palette_sensors.add_block('nxtbattery',
+                  style='box-style',
+                  label=_('battery'),
+                  help_string=_('Get battery level of the brick'),
+                  prim_name='nxtbattery')
+        self.tw.lc.def_prim('nxtbattery', 0, lambda self:
+            primitive_dictionary['nxtbattery']())
+        BOX_COLORS['nxtbattery'] = COLOR[:]
+
     def start(self):
         # This gets called by the start button
         pass
@@ -549,6 +559,17 @@ class Nxt_plugin(Plugin):
                     raise logoerror(ERROR)
             else:
                 raise logoerror(ERROR_PORT)
+        else:
+            raise logoerror(ERROR_BRICK)
+
+    def _prim_nxtbattery(self):
+        if self.nxtbrick:
+            bat = -1
+            try:
+                bat = self.nxtbrick.get_battery_level()
+                return bat
+            except:
+                raise logoerror(ERROR)
         else:
             raise logoerror(ERROR_BRICK)
 
