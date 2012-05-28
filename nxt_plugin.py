@@ -380,6 +380,9 @@ class Nxt_plugin(Plugin):
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 if not((power < -127) or (power > 127)):
+                    if turns < 0:
+                        turns = abs(turns)
+                        power = -1 * power
                     try:
                         m = Motor(self.nxtbrick, port)
                         m.turn(power, int(turns*360), brake=True)
@@ -396,6 +399,9 @@ class Nxt_plugin(Plugin):
     def _prim_nxtsyncmotors(self, power, steering, turns):
         if self.nxtbrick:
             if not((power < -127) or (power > 127)):
+                if turns < 0:
+                    turns = abs(turns)
+                    power = -1 * power
                 try:
                     motorB = Motor(self.nxtbrick, PORT_B)
                     motorC = Motor(self.nxtbrick, PORT_C)
