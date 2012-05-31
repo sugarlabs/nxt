@@ -65,13 +65,15 @@ ERROR_PORT = _('Please check the port.')
 ERROR_POWER = _('The value of power must be between -127 to 127.')
 ERROR = _('An error has occurred: check all connections and try to reconnect.')
 
+BRICK_FOUND = _('NXT found')
+BRICK_NOT_FOUND = _('NXT not found')
+
 MINIMO_INTERVALO = 0.2
 
 class Nxt_plugin(Plugin):
 
     def __init__(self, parent):
         self.tw = parent
-        self.nxtbrick = None
 
         """
         Adding a rule to /etc/udev/rules.d call: /etc/udev/rules.d/99-lego.rules
@@ -81,11 +83,6 @@ class Nxt_plugin(Plugin):
         """
 
         self.nxtbrick = nxt.locator.find_one_brick()
-
-        if self.nxtbrick:
-            debug_output(_('NXT found'))
-        else:
-            debug_output(_('NXT not found'))
 
         self.anterior = time.time()
         self.res = -1
@@ -235,7 +232,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtreadsensor'] = self._prim_nxtreadsensor
         palette_sensors.add_block('nxtreadsensor',
                   style='number-style-block',
-                  label=[_('read'), _('sensor'), _('port')],
+                  label=[_('read'), _('port'), _('sensor')],
                   help_string=_('Read sensor output.'),
                   prim_name='nxtreadsensor')
         self.tw.lc.def_prim('nxtreadsensor', 2, lambda self, x, y:
@@ -325,7 +322,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
         palette_sensors.add_block('nxtsetcolor',
                   style='basic-style-2arg',
-                  label=[_('set light'), _('color'), _('port')],
+                  label=[_('set light'), _('port'), _('color')],
                   help_string=_('Set color sensor light.'),
                   prim_name='nxtsetcolor')
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
@@ -459,11 +456,11 @@ class Nxt_plugin(Plugin):
     def _prim_nxtportc(self):
         return _('PORT C')
 
-    def _prim_nxtreadsensor(self, sensor, port):
+    def _prim_nxtreadsensor(self, port, sensor):
         """ Read sensor at specified port"""
         if (port in NXT_SENSOR_PORTS):
             actual = time.time()
-            if ((actual - self.anterior) > MINIMO_INTERVALO) and (self.nxtbrick):
+            if self.nxtbrick and ((actual - self.anterior) > MINIMO_INTERVALO):
                 self.anterior = actual
                 port = NXT_SENSOR_PORTS[port]
                 try:
@@ -514,7 +511,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtsetcolor(self, color, port):
+    def _prim_nxtsetcolor(self, port, color):
         if self.nxtbrick:
             if (port in NXT_SENSOR_PORTS):
                 port = NXT_SENSOR_PORTS[port]
@@ -570,10 +567,8 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtbattery(self):
         if self.nxtbrick:
-            bat = -1
             try:
-                bat = self.nxtbrick.get_battery_level()
-                return bat
+                return self.nxtbrick.get_battery_level()
             except:
                 raise logoerror(ERROR)
         else:
@@ -589,6 +584,11 @@ class Nxt_plugin(Plugin):
 
         self.tw.show_toolbar_palette(palette_name_to_index('nxt-motors'), regenerate=True, show=False)
         self.tw.show_toolbar_palette(palette_name_to_index('nxt-sensors'), regenerate=True, show=False)
+
+        if self.nxtbrick:
+            raise logoerror(BRICK_FOUND)
+        else:
+            raise logoerror(BRICK_NOT_FOUND)
 
     def change_color_blocks(self):
         motors_blocks = palette_blocks[palette_name_to_index('nxt-motors')]
