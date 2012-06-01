@@ -319,16 +319,6 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtsound']())
         BOX_COLORS['nxtsound'] = COLOR[:]
 
-        primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
-        palette_sensors.add_block('nxtsetcolor',
-                  style='basic-style-2arg',
-                  label=[_('set light'), _('port'), _('color')],
-                  help_string=_('Set color sensor light.'),
-                  prim_name='nxtsetcolor')
-        self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
-            primitive_dictionary['nxtsetcolor'](x, y))
-        BOX_COLORS['nxtsetcolor'] = COLOR[:]
-
         primitive_dictionary['nxtbattery'] = self._prim_nxtbattery
         palette_sensors.add_block('nxtbattery',
                   style='box-style',
@@ -338,6 +328,16 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtbattery', 0, lambda self:
             primitive_dictionary['nxtbattery']())
         BOX_COLORS['nxtbattery'] = COLOR[:]
+
+        primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
+        palette_sensors.add_block('nxtsetcolor',
+                  style='basic-style-2arg',
+                  label=[_('set light'), _('port'), _('color')],
+                  help_string=_('Set color sensor light.'),
+                  prim_name='nxtsetcolor')
+        self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
+            primitive_dictionary['nxtsetcolor'](x, y))
+        BOX_COLORS['nxtsetcolor'] = COLOR[:]
 
     def start(self):
         # This gets called by the start button
