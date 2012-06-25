@@ -38,7 +38,7 @@ from TurtleArt.tapalette import palette_name_to_index
 from TurtleArt.tapalette import special_block_colors
 from TurtleArt.tapalette import palette_blocks
 from TurtleArt.talogo import primitive_dictionary, logoerror
-from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS, BOX_COLORS
+from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
 from TurtleArt.tautils import debug_output
 
 
@@ -106,7 +106,7 @@ class Nxt_plugin(Plugin):
                      help_string=_('Search for a connected NXT brick.'))
         self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
             primitive_dictionary['nxtrefresh']())
-        BOX_COLORS['nxtrefresh'] = COLOR_PRESENT[:]
+        special_block_colors['nxtrefresh'] = COLOR_PRESENT[:]
 
         primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
         palette_motors.add_block('nxtplaytone',
@@ -117,7 +117,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtplaytone')
         self.tw.lc.def_prim('nxtplaytone', 2, lambda self, x, y:
             primitive_dictionary['nxtplaytone'](x, y))
-        BOX_COLORS['nxtplaytone'] = COLOR[:]
+        special_block_colors['nxtplaytone'] = COLOR[:]
 
         primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
         palette_motors.add_block('nxtturnmotor',
@@ -128,7 +128,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtturnmotor')
         self.tw.lc.def_prim('nxtturnmotor', 3, lambda self, x, y, z:
             primitive_dictionary['nxtturnmotor'](x, y, z))
-        BOX_COLORS['nxtturnmotor'] = COLOR[:]
+        special_block_colors['nxtturnmotor'] = COLOR[:]
 
         primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
         palette_motors.add_block('nxtsyncmotors',
@@ -139,7 +139,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtsyncmotors')
         self.tw.lc.def_prim('nxtsyncmotors', 3, lambda self, x, y, z:
             primitive_dictionary['nxtsyncmotors'](x, y, z))
-        BOX_COLORS['nxtsyncmotors'] = COLOR[:]
+        special_block_colors['nxtsyncmotors'] = COLOR[:]
 
         primitive_dictionary['nxtporta'] = self._prim_nxtporta
         palette_motors.add_block('nxtporta',
@@ -149,7 +149,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtporta')
         self.tw.lc.def_prim('nxtporta', 0, lambda self:
             primitive_dictionary['nxtporta']())
-        BOX_COLORS['nxtporta'] = COLOR[:]
+        special_block_colors['nxtporta'] = COLOR[:]
 
         primitive_dictionary['nxtportb'] = self._prim_nxtportb
         palette_motors.add_block('nxtportb',
@@ -159,7 +159,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtportb')
         self.tw.lc.def_prim('nxtportb', 0, lambda self:
             primitive_dictionary['nxtportb']())
-        BOX_COLORS['nxtportb'] = COLOR[:]
+        special_block_colors['nxtportb'] = COLOR[:]
 
         primitive_dictionary['nxtportc'] = self._prim_nxtportc
         palette_motors.add_block('nxtportc',
@@ -169,7 +169,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtportc')
         self.tw.lc.def_prim('nxtportc', 0, lambda self:
             primitive_dictionary['nxtportc']())
-        BOX_COLORS['nxtportc'] = COLOR[:]
+        special_block_colors['nxtportc'] = COLOR[:]
 
         primitive_dictionary['nxtstartmotor'] = self._prim_nxtstartmotor
         palette_motors.add_block('nxtstartmotor',
@@ -180,7 +180,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtstartmotor')
         self.tw.lc.def_prim('nxtstartmotor', 2, lambda self, x, y:
             primitive_dictionary['nxtstartmotor'](x, y))
-        BOX_COLORS['nxtstartmotor'] = COLOR[:]
+        special_block_colors['nxtstartmotor'] = COLOR[:]
 
         primitive_dictionary['nxtbrake'] = self._prim_nxtbrake
         palette_motors.add_block('nxtbrake',
@@ -191,7 +191,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtbrake')
         self.tw.lc.def_prim('nxtbrake', 1, lambda self, x:
             primitive_dictionary['nxtbrake'](x))
-        BOX_COLORS['nxtbrake'] = COLOR[:]
+        special_block_colors['nxtbrake'] = COLOR[:]
 
         primitive_dictionary['nxtmotorreset'] = self._prim_nxtmotorreset
         palette_motors.add_block('nxtmotorreset',
@@ -202,7 +202,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtmotorreset')
         self.tw.lc.def_prim('nxtmotorreset', 1, lambda self, x:
             primitive_dictionary['nxtmotorreset'](x))
-        BOX_COLORS['nxtmotorreset'] = COLOR[:]
+        special_block_colors['nxtmotorreset'] = COLOR[:]
 
         primitive_dictionary['nxtmotorposition'] = self._prim_nxtmotorposition
         palette_motors.add_block('nxtmotorposition',
@@ -213,7 +213,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtmotorposition')
         self.tw.lc.def_prim('nxtmotorposition', 1, lambda self, x:
             primitive_dictionary['nxtmotorposition'](x))
-        BOX_COLORS['nxtmotorposition'] = COLOR[:]
+        special_block_colors['nxtmotorposition'] = COLOR[:]
 
         # Palette of Sensors
         palette_sensors = make_palette('nxt-sensors', COLOR_NOTPRESENT,
@@ -227,7 +227,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtport1')
         self.tw.lc.def_prim('nxtport1', 0, lambda self:
             primitive_dictionary['nxtport1']())
-        BOX_COLORS['nxtport1'] = COLOR[:]
+        special_block_colors['nxtport1'] = COLOR[:]
 
         primitive_dictionary['nxtreadsensor'] = self._prim_nxtreadsensor
         palette_sensors.add_block('nxtreadsensor',
@@ -237,7 +237,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtreadsensor')
         self.tw.lc.def_prim('nxtreadsensor', 2, lambda self, x, y:
             primitive_dictionary['nxtreadsensor'](x, y))
-        BOX_COLORS['nxtreadsensor'] = COLOR[:]
+        special_block_colors['nxtreadsensor'] = COLOR[:]
 
         primitive_dictionary['nxtport2'] = self._prim_nxtport2
         palette_sensors.add_block('nxtport2',
@@ -247,7 +247,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtport2')
         self.tw.lc.def_prim('nxtport2', 0, lambda self:
             primitive_dictionary['nxtport2']())
-        BOX_COLORS['nxtport2'] = COLOR[:]
+        special_block_colors['nxtport2'] = COLOR[:]
 
         primitive_dictionary['nxtcolor'] = self._prim_nxtcolor
         palette_sensors.add_block('nxtcolor',
@@ -257,7 +257,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtcolor')
         self.tw.lc.def_prim('nxtcolor', 0, lambda self:
             primitive_dictionary['nxtcolor']())
-        BOX_COLORS['nxtcolor'] = COLOR[:]
+        special_block_colors['nxtcolor'] = COLOR[:]
 
         primitive_dictionary['nxtlight'] = self._prim_nxtlight
         palette_sensors.add_block('nxtlight',
@@ -267,7 +267,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtlight')
         self.tw.lc.def_prim('nxtlight', 0, lambda self:
             primitive_dictionary['nxtlight']())
-        BOX_COLORS['nxtlight'] = COLOR[:]
+        special_block_colors['nxtlight'] = COLOR[:]
 
         primitive_dictionary['nxtport3'] = self._prim_nxtport3
         palette_sensors.add_block('nxtport3',
@@ -277,7 +277,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtport3')
         self.tw.lc.def_prim('nxtport3', 0, lambda self:
             primitive_dictionary['nxtport3']())
-        BOX_COLORS['nxtport3'] = COLOR[:]
+        special_block_colors['nxtport3'] = COLOR[:]
 
         primitive_dictionary['nxttouch'] = self._prim_nxttouch
         palette_sensors.add_block('nxttouch',
@@ -287,7 +287,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxttouch')
         self.tw.lc.def_prim('nxttouch', 0, lambda self:
             primitive_dictionary['nxttouch']())
-        BOX_COLORS['nxttouch'] = COLOR[:]
+        special_block_colors['nxttouch'] = COLOR[:]
 
         primitive_dictionary['nxtultrasonic'] = self._prim_nxtultrasonic
         palette_sensors.add_block('nxtultrasonic',
@@ -297,7 +297,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtultrasonic')
         self.tw.lc.def_prim('nxtultrasonic', 0, lambda self:
             primitive_dictionary['nxtultrasonic']())
-        BOX_COLORS['nxtultrasonic'] = COLOR[:]
+        special_block_colors['nxtultrasonic'] = COLOR[:]
 
         primitive_dictionary['nxtport4'] = self._prim_nxtport4
         palette_sensors.add_block('nxtport4',
@@ -307,7 +307,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtport4')
         self.tw.lc.def_prim('nxtport4', 0, lambda self:
             primitive_dictionary['nxtport4']())
-        BOX_COLORS['nxtport4'] = COLOR[:]
+        special_block_colors['nxtport4'] = COLOR[:]
 
         primitive_dictionary['nxtsound'] = self._prim_nxtsound
         palette_sensors.add_block('nxtsound',
@@ -317,7 +317,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtsound')
         self.tw.lc.def_prim('nxtsound', 0, lambda self:
             primitive_dictionary['nxtsound']())
-        BOX_COLORS['nxtsound'] = COLOR[:]
+        special_block_colors['nxtsound'] = COLOR[:]
 
         primitive_dictionary['nxtbattery'] = self._prim_nxtbattery
         palette_sensors.add_block('nxtbattery',
@@ -327,7 +327,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtbattery')
         self.tw.lc.def_prim('nxtbattery', 0, lambda self:
             primitive_dictionary['nxtbattery']())
-        BOX_COLORS['nxtbattery'] = COLOR[:]
+        special_block_colors['nxtbattery'] = COLOR[:]
 
         primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
         palette_sensors.add_block('nxtsetcolor',
@@ -337,7 +337,7 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtsetcolor')
         self.tw.lc.def_prim('nxtsetcolor', 2, lambda self, x, y:
             primitive_dictionary['nxtsetcolor'](x, y))
-        BOX_COLORS['nxtsetcolor'] = COLOR[:]
+        special_block_colors['nxtsetcolor'] = COLOR[:]
 
     def start(self):
         # This gets called by the start button
@@ -599,8 +599,8 @@ class Nxt_plugin(Plugin):
             if block.type in ['proto', 'block']:
                 if block.name in nxt_palette_blocks:
                     if (self.nxtbrick) or (block.name == 'nxtrefresh'):
-                        BOX_COLORS[block.name] = COLOR_PRESENT[:]
+                        special_block_colors[block.name] = COLOR_PRESENT[:]
                     else:
-                        BOX_COLORS[block.name] = COLOR_NOTPRESENT[:]
+                        special_block_colors[block.name] = COLOR_NOTPRESENT[:]
                     block.refresh()
 
