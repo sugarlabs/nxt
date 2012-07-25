@@ -322,7 +322,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtbattery'] = self._prim_nxtbattery
         palette_sensors.add_block('nxtbattery',
                   style='box-style',
-                  label=_('battery'),
+                  label=_('battery level'),
                   help_string=_('Get battery level of the brick'),
                   prim_name='nxtbattery')
         self.tw.lc.def_prim('nxtbattery', 0, lambda self:
