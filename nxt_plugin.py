@@ -27,7 +27,6 @@
 
 import os
 import sys
-import time
 
 from gettext import gettext as _
 
@@ -68,7 +67,6 @@ ERROR = _('An error has occurred: check all connections and try to reconnect.')
 BRICK_FOUND = _('NXT found')
 BRICK_NOT_FOUND = _('NXT not found')
 
-MINIMO_INTERVALO = 0.2
 
 class Nxt_plugin(Plugin):
 
@@ -84,8 +82,12 @@ class Nxt_plugin(Plugin):
 
         self.nxtbrick = nxt.locator.find_one_brick()
 
-        self.anterior = time.time()
-        self.res = -1
+        self.res_color = -1
+        self.res_light = -1
+        self.res_ultrasonic = -1
+        self.res_touch = -1
+        self.res_sound = -1
+
         self.motor_pos = 0
 
     def setup(self):
@@ -459,24 +461,40 @@ class Nxt_plugin(Plugin):
     def _prim_nxtreadsensor(self, port, sensor):
         """ Read sensor at specified port"""
         if (port in NXT_SENSOR_PORTS):
-            actual = time.time()
-            if self.nxtbrick and ((actual - self.anterior) > MINIMO_INTERVALO):
-                self.anterior = actual
+            if self.nxtbrick:
                 port = NXT_SENSOR_PORTS[port]
-                try:
-                    if sensor == _('color'):
-                        self.res = colors[Color20(self.nxtbrick, port).get_sample()]
-                    elif sensor == _('light'):
-                        self.res = int(Color20(self.nxtbrick, port).get_light())
-                    elif sensor == _('ultrasonic'):
-                        self.res = Ultrasonic(self.nxtbrick, port).get_sample()
-                    elif sensor == _('touch'):
-                        self.res = Touch(self.nxtbrick, port).get_sample()
-                    elif sensor == _('sound'):
-                        self.res = Sound(self.nxtbrick, port).get_sample()
-                except:
-                    pass
-            return self.res
+                if sensor == _('color'):
+                    try:
+                        self.res_color = colors[Color20(self.nxtbrick, port).get_sample()]
+                    except:
+                        pass
+                    return self.res_color
+                elif sensor == _('light'):
+                    try:
+                        self.res_light = int(Color20(self.nxtbrick, port).get_light())
+                    except:
+                        pass
+                    return self.res_light
+                elif sensor == _('ultrasonic'):
+                    try:
+                        self.res_ultrasonic = Ultrasonic(self.nxtbrick, port).get_sample()
+                    except:
+                        pass
+                    return self.res_ultrasonic
+                elif sensor == _('touch'):
+                    try:
+                        self.res_touch = Touch(self.nxtbrick, port).get_sample()
+                    except:
+                        pass
+                    return self.res_touch
+                elif sensor == _('sound'):
+                    try:
+                        self.res_sound = Sound(self.nxtbrick, port).get_sample()
+                    except:
+                        pass
+                    return self.res_sound
+            else:
+                return -1
         else:
             raise logoerror(ERROR_PORT)
 
