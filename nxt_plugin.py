@@ -84,13 +84,17 @@ class Nxt_plugin(Plugin):
 
         self.nxtbrick = nxt.locator.find_one_brick()
 
-        self.anterior = time.time()
+        self.time_color = time.time()
+        self.time_light = time.time()
+        self.time_touch = time.time()
+        self.time_sound = time.time()
+        self.time_ultrasonic = time.time()
 
         self.res_color = -1
         self.res_light = -1
-        self.res_ultrasonic = -1
         self.res_touch = -1
         self.res_sound = -1
+        self.res_ultrasonic = -1
 
         self.motor_pos = 0
 
@@ -469,40 +473,40 @@ class Nxt_plugin(Plugin):
                 actual = time.time()
                 port = NXT_SENSOR_PORTS[port]
                 if sensor == _('color'):
-                    if ((actual - self.anterior) > MINIMO_INTERVALO):
-                        self.anterior = actual
+                    if ((actual - self.time_color) > MINIMO_INTERVALO):
+                        self.time_color = actual
                         try:
                             self.res_color = colors[Color20(self.nxtbrick, port).get_sample()]
                         except:
                             pass
                     return self.res_color
                 elif sensor == _('light'):
-                    if ((actual - self.anterior) > MINIMO_INTERVALO):
-                        self.anterior = actual
+                    if ((actual - self.time_light) > MINIMO_INTERVALO):
+                        self.time_light = actual
                         try:
                             self.res_light = int(Color20(self.nxtbrick, port).get_light())
                         except:
                             pass
                     return self.res_light
                 elif sensor == _('ultrasonic'):
-                    if ((actual - self.anterior) > MINIMO_INTERVALO):
-                        self.anterior = actual
+                    if ((actual - self.time_ultrasonic) > MINIMO_INTERVALO):
+                        self.time_ultrasonic = actual
                         try:
                             self.res_ultrasonic = Ultrasonic(self.nxtbrick, port).get_sample()
                         except:
                             pass
                     return self.res_ultrasonic
                 elif sensor == _('touch'):
-                    if ((actual - self.anterior) > MINIMO_INTERVALO):
-                        self.anterior = actual
+                    if ((actual - self.time_touch) > MINIMO_INTERVALO):
+                        self.time_touch = actual
                         try:
                             self.res_touch = Touch(self.nxtbrick, port).get_sample()
                         except:
                             pass
                     return self.res_touch
                 elif sensor == _('sound'):
-                    if ((actual - self.anterior) > MINIMO_INTERVALO):
-                        self.anterior = actual
+                    if ((actual - self.time_sound) > MINIMO_INTERVALO):
+                        self.time_sound = actual
                         try:
                             self.res_sound = Sound(self.nxtbrick, port).get_sample()
                         except:
