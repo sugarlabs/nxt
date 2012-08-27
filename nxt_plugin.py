@@ -27,6 +27,7 @@
 
 import os
 import sys
+import time
 
 from gettext import gettext as _
 
@@ -46,8 +47,7 @@ import usb
 import nxt
 from nxt.locator import find_one_brick
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
-from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, \
-     Ultrasonic, Type, Sound
+from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound
 
 NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4}
 NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
@@ -67,6 +67,8 @@ ERROR = _('An error has occurred: check all connections and try to reconnect.')
 BRICK_FOUND = _('NXT found')
 BRICK_NOT_FOUND = _('NXT not found')
 
+MINIMO_INTERVALO = 0.2
+
 
 class Nxt_plugin(Plugin):
 
@@ -81,6 +83,8 @@ class Nxt_plugin(Plugin):
         """
 
         self.nxtbrick = nxt.locator.find_one_brick()
+
+        self.anterior = time.time()
 
         self.res_color = -1
         self.res_light = -1
@@ -462,36 +466,47 @@ class Nxt_plugin(Plugin):
         """ Read sensor at specified port"""
         if (port in NXT_SENSOR_PORTS):
             if self.nxtbrick:
+                actual = time.time()
                 port = NXT_SENSOR_PORTS[port]
                 if sensor == _('color'):
-                    try:
-                        self.res_color = colors[Color20(self.nxtbrick, port).get_sample()]
-                    except:
-                        pass
+                    if ((actual - self.anterior) > MINIMO_INTERVALO):
+                        self.anterior = actual
+                        try:
+                            self.res_color = colors[Color20(self.nxtbrick, port).get_sample()]
+                        except:
+                            pass
                     return self.res_color
                 elif sensor == _('light'):
-                    try:
-                        self.res_light = int(Color20(self.nxtbrick, port).get_light())
-                    except:
-                        pass
+                    if ((actual - self.anterior) > MINIMO_INTERVALO):
+                        self.anterior = actual
+                        try:
+                            self.res_light = int(Color20(self.nxtbrick, port).get_light())
+                        except:
+                            pass
                     return self.res_light
                 elif sensor == _('ultrasonic'):
-                    try:
-                        self.res_ultrasonic = Ultrasonic(self.nxtbrick, port).get_sample()
-                    except:
-                        pass
+                    if ((actual - self.anterior) > MINIMO_INTERVALO):
+                        self.anterior = actual
+                        try:
+                            self.res_ultrasonic = Ultrasonic(self.nxtbrick, port).get_sample()
+                        except:
+                            pass
                     return self.res_ultrasonic
                 elif sensor == _('touch'):
-                    try:
-                        self.res_touch = Touch(self.nxtbrick, port).get_sample()
-                    except:
-                        pass
+                    if ((actual - self.anterior) > MINIMO_INTERVALO):
+                        self.anterior = actual
+                        try:
+                            self.res_touch = Touch(self.nxtbrick, port).get_sample()
+                        except:
+                            pass
                     return self.res_touch
                 elif sensor == _('sound'):
-                    try:
-                        self.res_sound = Sound(self.nxtbrick, port).get_sample()
-                    except:
-                        pass
+                    if ((actual - self.anterior) > MINIMO_INTERVALO):
+                        self.anterior = actual
+                        try:
+                            self.res_sound = Sound(self.nxtbrick, port).get_sample()
+                        except:
+                            pass
                     return self.res_sound
             else:
                 return -1
