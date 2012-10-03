@@ -13,6 +13,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+import time
 from .common import *
 from .digital import BaseDigitalSensor
 from .analog import BaseAnalogSensor
@@ -153,6 +154,7 @@ class Color20(BaseAnalogSensor):
 
     def get_light(self):
         self.get_reflected_light(Type.LIGHT_INACTIVE)
-        return self.get_input_values().scaled_value
+        time.sleep(0.1)
+        res = self.get_input_values().normalized_ad_value
     
     get_sample = get_color
