@@ -142,19 +142,23 @@ class Color20(BaseAnalogSensor):
 
     def get_light_color(self):
         """Returns one of the COLOR* Type namespace values, e.g. Type.COLORRED"""
-        return self.get_input_values().sensor_type
+        res = self.get_input_values()
+        return res.sensor_type
 
     def get_reflected_light(self, color):
         self.set_light_color(color)
-        return self.get_input_values().scaled_value
+        res = self.get_input_values()
+        return res.scaled_value
     
     def get_color(self):
         self.get_reflected_light(Type.COLORFULL)
-        return self.get_input_values().scaled_value
+        res = self.get_input_values()
+        return res.scaled_value
 
     def get_light(self):
         self.get_reflected_light(Type.LIGHT_INACTIVE)
         time.sleep(0.1)
-        res = self.get_input_values().normalized_ad_value
+        res = self.get_input_values()
+        return res.normalized_ad_value
     
     get_sample = get_color
