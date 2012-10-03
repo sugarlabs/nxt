@@ -469,31 +469,30 @@ class Nxt_plugin(Plugin):
         if (port in NXT_SENSOR_PORTS):
             if self.nxtbrick:
                 actual = time.time()
-                port = NXT_SENSOR_PORTS[port]
-                if port == _('PORT 1'):
+                res_l = -1
+                port_aux = NXT_SENSOR_PORTS[port]
+                if (port_aux == PORT_1):
                     if ((actual - self.time_port_1) > MINIMO_INTERVALO):
                         self.time_port_1 = actual
-                        res = self._aux_read_sensor(port, sensor)
-                        if (res == -1):
-                            return self.res_port_1
-                elif port == _('PORT 2'):
+                        res_l = self.res_port_1
+                elif (port_aux == PORT_2):
                     if ((actual - self.time_port_2) > MINIMO_INTERVALO):
                         self.time_port_2 = actual
-                        res = self._aux_read_sensor(port, sensor)
-                        if (res == -1):
-                            return self.res_port_2
-                elif port == _('PORT 3'):
+                        res_l = self.res_port_2
+                elif (port_aux == PORT_3):
                     if ((actual - self.time_port_3) > MINIMO_INTERVALO):
                         self.time_port_3 = actual
-                        res = self._aux_read_sensor(port, sensor)
-                        if (res == -1):
-                            return self.res_port_3
-                elif port == _('PORT 4'):
+                        res_l = self.res_port_3
+                elif (port_aux == PORT_4):
                     if ((actual - self.time_port_4) > MINIMO_INTERVALO):
                         self.time_port_4 = actual
-                        res = self._aux_read_sensor(port, sensor)
-                        if (res == -1):
-                            return self.res_port_4
+                        res_l = self.res_port_4
+
+                res_f = self._aux_read_sensor(port_aux, sensor)
+                if (res_f == -1):
+                    return res_l
+                else:
+                    return res_f
             else:
                 return -1
         else:
