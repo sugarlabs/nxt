@@ -377,6 +377,7 @@ class Nxt_plugin(Plugin):
                 Motor(self.nxtbrick, PORT_A).idle()
                 Motor(self.nxtbrick, PORT_B).idle()
                 Motor(self.nxtbrick, PORT_C).idle()
+                self.nxtbrick.close_brick()
             except:
                 pass
 
