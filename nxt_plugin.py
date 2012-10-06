@@ -257,16 +257,6 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtport2']())
         special_block_colors['nxtport2'] = COLOR[:]
 
-        primitive_dictionary['nxtcolor'] = self._prim_nxtcolor
-        palette_sensors.add_block('nxtcolor',
-                  style='box-style',
-                  label=_('color'),
-                  help_string=_('color sensor'),
-                  prim_name='nxtcolor')
-        self.tw.lc.def_prim('nxtcolor', 0, lambda self:
-            primitive_dictionary['nxtcolor']())
-        special_block_colors['nxtcolor'] = COLOR[:]
-
         primitive_dictionary['nxtlight'] = self._prim_nxtlight
         palette_sensors.add_block('nxtlight',
                   style='box-style',
@@ -326,6 +316,16 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsound', 0, lambda self:
             primitive_dictionary['nxtsound']())
         special_block_colors['nxtsound'] = COLOR[:]
+
+        primitive_dictionary['nxtcolor'] = self._prim_nxtcolor
+        palette_sensors.add_block('nxtcolor',
+                  style='box-style',
+                  label=_('color'),
+                  help_string=_('color sensor'),
+                  prim_name='nxtcolor')
+        self.tw.lc.def_prim('nxtcolor', 0, lambda self:
+            primitive_dictionary['nxtcolor']())
+        special_block_colors['nxtcolor'] = COLOR[:]
 
         primitive_dictionary['nxtsetcolor'] = self._prim_nxtsetcolor
         palette_sensors.add_block('nxtsetcolor',
