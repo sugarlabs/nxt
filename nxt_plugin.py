@@ -47,9 +47,9 @@ import usb
 import nxt
 from nxt.locator import find_one_brick
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
-from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound
+from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
 
-NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4}
+NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('grey'): 5}
 NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
 NXT_SENSOR_PORTS = {_('PORT 1'): PORT_1, _('PORT 2'): PORT_2, _('PORT 3'): PORT_3, _('PORT 4'): PORT_4}
 
@@ -267,6 +267,16 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtlight']())
         special_block_colors['nxtlight'] = COLOR[:]
 
+        primitive_dictionary['nxtgrey'] = self._prim_nxtgrey
+        palette_sensors.add_block('nxtgrey',
+                  style='box-style',
+                  label=_('grey'),
+                  help_string=_('grey sensor'),
+                  prim_name='nxtgrey')
+        self.tw.lc.def_prim('nxtgrey', 0, lambda self:
+            primitive_dictionary['nxtgrey']())
+        special_block_colors['nxtgrey'] = COLOR[:]
+
         primitive_dictionary['nxtport3'] = self._prim_nxtport3
         palette_sensors.add_block('nxtport3',
                   style='box-style',
@@ -441,6 +451,9 @@ class Nxt_plugin(Plugin):
     def _prim_nxtlight(self):
         return _('light')
 
+    def _prim_nxtgrey(self):
+        return _('grey')
+
     def _prim_nxtsound(self):
         return _('sound')
 
@@ -505,13 +518,19 @@ class Nxt_plugin(Plugin):
             if sensor == _('color'):
                 res = colors[Color20(self.nxtbrick, port).get_sample()]
             elif sensor == _('light'):
-                res = int(Color20(self.nxtbrick, port).get_light())
+                light_sensor = Light(self.nxtbrick, port)
+                light_sensor.set_illuminated(False)
+                res = light_sensor.get_lightness()
             elif sensor == _('ultrasonic'):
                 res = Ultrasonic(self.nxtbrick, port).get_sample()
             elif sensor == _('touch'):
                 res = Touch(self.nxtbrick, port).get_sample()
             elif sensor == _('sound'):
                 res = Sound(self.nxtbrick, port).get_sample()
+            elif sensor == _('grey'):
+                grey_sensor = Light(self.nxtbrick, port)
+                grey_sensor.set_illuminated(True)
+                res = grey_sensor.get_lightness()
         except:
             pass
         return res
