@@ -23,7 +23,7 @@ class NoBackendError(Exception):
 class Method():
     """Used to indicate which comm backends should be tried by find_bricks/
 find_one_brick. Any or all can be selected."""
-    def __init__(self, usb=True, bluetooth=True, fantomusb=False, fantombt=False):
+    def __init__(self, usb=True, bluetooth=False, fantomusb=False, fantombt=False):
         #new method options MUST default to False!
         self.usb = usb
         self.bluetooth = bluetooth
