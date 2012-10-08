@@ -45,7 +45,7 @@ from TurtleArt.tautils import debug_output
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
 import nxt
-from nxt.locator import find_one_brick
+from nxt.locator import find_bricks
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
 
@@ -82,7 +82,7 @@ class Nxt_plugin(Plugin):
         BUS=="usb", ATTRS{idVendor}=="0694", ATTRS{idProduct}=="0002", MODE="0666"
         """
 
-        self.nxtbrick = nxt.locator.find_one_brick()
+        self.nxt_find()
 
         self.time_port_1 = time.time()
         self.time_port_2 = time.time()
@@ -115,6 +115,27 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtrefresh', 0, lambda self :
             primitive_dictionary['nxtrefresh']())
         special_block_colors['nxtrefresh'] = COLOR_PRESENT[:]
+
+        primitive_dictionary['nxtselect'] = self._prim_nxtselect
+        palette.add_block('nxtselect',
+                          style='basic-style-1arg',
+                          default = 1,
+                          label=_('NxT'),
+                          help_string=_('set current NxT device'),
+                          prim_name = 'nxtselect')
+        self.tw.lc.def_prim('nxtselect', 1, lambda self, n: 
+            primitive_dictionary['nxtselect'](n))
+        special_block_colors['nxtselect'] = COLOR_PRESENT[:]
+
+        primitive_dictionary['nxtcount'] = self._prim_nxtcount
+        palette.add_block('nxtcount',
+                          style='box-style',
+                          label=_('number of NxT'),
+                          help_string=_('number of NxT devices'),
+                          prim_name = 'nxtcount')
+        self.tw.lc.def_prim('nxtcount', 0, lambda self:
+            primitive_dictionary['nxtcount']())
+        special_block_colors['nxtcount'] = COLOR_PRESENT[:]
 
         primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
         palette_motors.add_block('nxtplaytone',
@@ -357,6 +378,8 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtbattery']())
         special_block_colors['nxtbattery'] = COLOR[:]
 
+    ############################### Turtle signals ############################
+
     def start(self):
         # This gets called by the start button
         pass
@@ -370,7 +393,6 @@ class Nxt_plugin(Plugin):
                 Motor(self.nxtbrick, PORT_C).idle()
             except:
                 pass
-
 
     def goto_background(self):
         # This gets called when your process is sent to the background
@@ -390,6 +412,8 @@ class Nxt_plugin(Plugin):
                 self.nxtbrick.close_brick()
             except:
                 pass
+
+    ################################# Primitives ##############################
 
     def _prim_nxtturnmotor(self, port, turns, power):
         if self.nxtbrick:
@@ -645,6 +669,8 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(BRICK_NOT_FOUND)
 
+    ############################### Useful functions ##########################
+
     def change_color_blocks(self):
         motors_blocks = palette_blocks[palette_name_to_index('nxt-motors')]
         sensors_blocks = palette_blocks[palette_name_to_index('nxt-sensors')]
@@ -658,4 +684,15 @@ class Nxt_plugin(Plugin):
                     else:
                         special_block_colors[block.name] = COLOR_NOTPRESENT[:]
                     block.refresh()
+
+    def nxt_find(self):
+        self.nxtbrick = []
+        bricks = nxt.locator.find_bricks()
+
+        for s in bricks:
+            try:
+                b = s.connect()
+                self.bricks.append(b)
+            except:
+                pass
 
