@@ -64,7 +64,7 @@ ERROR_PORT = _('Please check the port.')
 ERROR_POWER = _('The value of power must be between -127 to 127.')
 ERROR = _('An error has occurred: check all connections and try to reconnect.')
 
-BRICK_FOUND = _('NXT found')
+BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
 BRICK_INDEX_NOT_FOUND = _('The brick number %s was not found')
 
@@ -87,17 +87,36 @@ class Nxt_plugin(Plugin):
 
         self.nxt_find()
 
-        self.time_port_1 = time.time()
-        self.time_port_2 = time.time()
-        self.time_port_3 = time.time()
-        self.time_port_4 = time.time()
+        self.time_port_1 = []
+        self.time_port_2 = []
+        self.time_port_3 = []
+        self.time_port_4 = []
 
-        self.res_port_1 = -1
-        self.res_port_2 = -1
-        self.res_port_3 = -1
-        self.res_port_4 = -1
+        self.res_port_1 = []
+        self.res_port_2 = []
+        self.res_port_3 = []
+        self.res_port_4 = []
 
-        self.motor_pos = 0
+        self.motor_pos_A = []
+        self.motor_pos_B = []
+        self.motor_pos_C = []
+
+        now = time.time()
+
+        for i in range(len(self.nxtbricks)):
+            self.time_port_1.append(now)
+            self.time_port_2.append(now)
+            self.time_port_3.append(now)
+            self.time_port_4.append(now)
+
+            self.res_port_1.append(-1)
+            self.res_port_2.append(-1)
+            self.res_port_3.append(-1)
+            self.res_port_4.append(-1)
+
+            self.motor_pos_A.append(0)
+            self.motor_pos_B.append(0)
+            self.motor_pos_C.append(0)
 
     def setup(self):
 
@@ -128,7 +147,7 @@ class Nxt_plugin(Plugin):
                           prim_name = 'nxtselect')
         self.tw.lc.def_prim('nxtselect', 1, lambda self, n: 
             primitive_dictionary['nxtselect'](n))
-        special_block_colors['nxtselect'] = COLOR_PRESENT[:]
+        special_block_colors['nxtselect'] = COLOR[:]
 
         primitive_dictionary['nxtcount'] = self._prim_nxtcount
         palette_motors.add_block('nxtcount',
@@ -138,7 +157,7 @@ class Nxt_plugin(Plugin):
                           prim_name = 'nxtcount')
         self.tw.lc.def_prim('nxtcount', 0, lambda self:
             primitive_dictionary['nxtcount']())
-        special_block_colors['nxtcount'] = COLOR_PRESENT[:]
+        special_block_colors['nxtcount'] = COLOR[:]
 
         primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
         palette_motors.add_block('nxtplaytone',
@@ -389,11 +408,11 @@ class Nxt_plugin(Plugin):
 
     def stop(self):
         # This gets called by the stop button
-        if self.nxtbrick:
+        for i in range(len(self.nxtbricks)):
             try:
-                Motor(self.nxtbrick, PORT_A).idle()
-                Motor(self.nxtbrick, PORT_B).idle()
-                Motor(self.nxtbrick, PORT_C).idle()
+                Motor(self.nxtbricks[i], PORT_A).idle()
+                Motor(self.nxtbricks[i], PORT_B).idle()
+                Motor(self.nxtbricks[i], PORT_C).idle()
             except:
                 pass
 
@@ -407,19 +426,19 @@ class Nxt_plugin(Plugin):
 
     def quit(self):
         # This gets called by the quit button
-        if self.nxtbrick:
+        for i in range(len(self.nxtbricks)):
             try:
-                Motor(self.nxtbrick, PORT_A).idle()
-                Motor(self.nxtbrick, PORT_B).idle()
-                Motor(self.nxtbrick, PORT_C).idle()
-                self.nxtbrick.close_brick()
+                Motor(self.nxtbricks[i], PORT_A).idle()
+                Motor(self.nxtbricks[i], PORT_B).idle()
+                Motor(self.nxtbricks[i], PORT_C).idle()
+                self.nxtbricks[i].close_brick()
             except:
                 pass
 
     ################################# Primitives ##############################
 
     def _prim_nxtturnmotor(self, port, turns, power):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 if not((power < -127) or (power > 127)):
@@ -427,7 +446,7 @@ class Nxt_plugin(Plugin):
                         turns = abs(turns)
                         power = -1 * power
                     try:
-                        m = Motor(self.nxtbrick, port)
+                        m = Motor(self.nxtbricks[self.active_nxt], port)
                         m.turn(power, int(turns*360), brake=True)
                         m.brake()
                     except:
@@ -440,14 +459,14 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsyncmotors(self, power, steering, turns):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if not((power < -127) or (power > 127)):
                 if turns < 0:
                     turns = abs(turns)
                     power = -1 * power
                 try:
-                    motorB = Motor(self.nxtbrick, PORT_B)
-                    motorC = Motor(self.nxtbrick, PORT_C)
+                    motorB = Motor(self.nxtbricks[self.active_nxt], PORT_B)
+                    motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
                     syncmotors = SynchronizedMotors(motorB, motorC, steering)
                     syncmotors.turn(power, int(turns*360))
                 except:
@@ -458,9 +477,9 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtplaytone(self, freq, time):
-        if self.nxtbrick:
+        if self.nxtbricks:
             try:
-                self.nxtbrick.play_tone(freq, time)
+                self.nxtbricks[self.active_nxt].play_tone(freq, time)
             except:
                 raise logoerror(ERROR)
         else:
@@ -508,26 +527,26 @@ class Nxt_plugin(Plugin):
     def _prim_nxtreadsensor(self, port, sensor):
         """ Read sensor at specified port"""
         if (port in NXT_SENSOR_PORTS):
-            if self.nxtbrick:
+            if self.nxtbricks:
                 actual = time.time()
                 res_l = -1
                 port_aux = NXT_SENSOR_PORTS[port]
                 if (port_aux == PORT_1):
-                    if ((actual - self.time_port_1) > MINIMO_INTERVALO):
-                        self.time_port_1 = actual
-                        res_l = self.res_port_1
+                    if ((actual - self.time_port_1[self.active_nxt]) > MINIMO_INTERVALO):
+                        self.time_port_1[self.active_nxt] = actual
+                        res_l = self.res_port_1[self.active_nxt]
                 elif (port_aux == PORT_2):
-                    if ((actual - self.time_port_2) > MINIMO_INTERVALO):
-                        self.time_port_2 = actual
-                        res_l = self.res_port_2
+                    if ((actual - self.time_port_2[self.active_nxt]) > MINIMO_INTERVALO):
+                        self.time_port_2[self.active_nxt] = actual
+                        res_l = self.res_port_2[self.active_nxt]
                 elif (port_aux == PORT_3):
-                    if ((actual - self.time_port_3) > MINIMO_INTERVALO):
-                        self.time_port_3 = actual
-                        res_l = self.res_port_3
+                    if ((actual - self.time_port_3[self.active_nxt]) > MINIMO_INTERVALO):
+                        self.time_port_3[self.active_nxt] = actual
+                        res_l = self.res_port_3[self.active_nxt]
                 elif (port_aux == PORT_4):
-                    if ((actual - self.time_port_4) > MINIMO_INTERVALO):
-                        self.time_port_4 = actual
-                        res_l = self.res_port_4
+                    if ((actual - self.time_port_4[self.active_nxt]) > MINIMO_INTERVALO):
+                        self.time_port_4[self.active_nxt] = actual
+                        res_l = self.res_port_4[self.active_nxt]
 
                 res_f = self._aux_read_sensor(port_aux, sensor)
                 if (res_f == -1):
@@ -543,19 +562,19 @@ class Nxt_plugin(Plugin):
         res = -1
         try:
             if sensor == _('color'):
-                res = colors[Color20(self.nxtbrick, port).get_sample()]
+                res = colors[Color20(self.nxtbricks[self.active_nxt], port).get_sample()]
             elif sensor == _('light'):
-                light_sensor = Light(self.nxtbrick, port)
+                light_sensor = Light(self.nxtbricks[self.active_nxt], port)
                 light_sensor.set_illuminated(False)
                 res = light_sensor.get_lightness()
             elif sensor == _('ultrasonic'):
-                res = Ultrasonic(self.nxtbrick, port).get_sample()
+                res = Ultrasonic(self.nxtbricks[self.active_nxt], port).get_sample()
             elif sensor == _('touch'):
-                res = Touch(self.nxtbrick, port).get_sample()
+                res = Touch(self.nxtbricks[self.active_nxt], port).get_sample()
             elif sensor == _('sound'):
-                res = Sound(self.nxtbrick, port).get_sample()
+                res = Sound(self.nxtbricks[self.active_nxt], port).get_sample()
             elif sensor == _('grey'):
-                grey_sensor = Light(self.nxtbrick, port)
+                grey_sensor = Light(self.nxtbricks[self.active_nxt], port)
                 grey_sensor.set_illuminated(True)
                 res = grey_sensor.get_lightness()
         except:
@@ -563,12 +582,12 @@ class Nxt_plugin(Plugin):
         return res
 
     def _prim_nxtstartmotor(self, port, power):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 if not((power < -127) or (power > 127)):
                     try:
-                        m = Motor(self.nxtbrick, port)
+                        m = Motor(self.nxtbricks[self.active_nxt], port)
                         m.weak_turn(power, 0)
                     except:
                         raise logoerror(ERROR)
@@ -580,11 +599,11 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtbrake(self, port):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 try:
-                    m = Motor(self.nxtbrick, port)
+                    m = Motor(self.nxtbricks[self.active_nxt], port)
                     m.brake()
                 except:
                     raise logoerror(ERROR)
@@ -594,7 +613,7 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsetcolor(self, port, color):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_SENSOR_PORTS):
                 port = NXT_SENSOR_PORTS[port]
                 if color == WHITE:
@@ -608,7 +627,7 @@ class Nxt_plugin(Plugin):
                 else:
                     color = Type.COLORNONE
                 try:
-                    Color20(self.nxtbrick, port).set_light_color(color)
+                    Color20(self.nxtbricks[self.active_nxt], port).set_light_color(color)
                 except:
                     raise logoerror(ERROR)
             else:
@@ -617,13 +636,18 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorreset(self, port):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 try:
-                    m = Motor(self.nxtbrick, port)
+                    m = Motor(self.nxtbricks[self.active_nxt], port)
                     t = m.get_tacho()
-                    self.motor_pos = t.tacho_count
+                    if port == PORT_A:
+                        self.motor_pos_A[self.active_nxt] = t.tacho_count
+                    elif port == PORT_B:
+                        self.motor_pos_B[self.active_nxt] = t.tacho_count
+                    elif port == PORT_C:
+                        self.motor_pos_C[self.active_nxt] = t.tacho_count
                     m.idle()
                 except:
                     raise logoerror(ERROR)
@@ -633,13 +657,19 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorposition(self, port):
-        if self.nxtbrick:
+        if self.nxtbricks:
             if (port in NXT_MOTOR_PORTS):
                 port = NXT_MOTOR_PORTS[port]
                 try:
-                    m = Motor(self.nxtbrick, port)
+                    m = Motor(self.nxtbricks[self.active_nxt], port)
                     t = m.get_tacho()
-                    return (t.tacho_count - self.motor_pos)
+                    if port == PORT_A:
+                        previous = self.motor_pos_A[self.active_nxt]
+                    elif port == PORT_B:
+                        previous = self.motor_pos_B[self.active_nxt]
+                    elif port == PORT_C:
+                        previous = self.motor_pos_C[self.active_nxt]
+                    return (t.tacho_count - previous)
                 except:
                     raise logoerror(ERROR)
             else:
@@ -648,27 +678,26 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtbattery(self):
-        if self.nxtbrick:
+        if self.nxtbricks:
             try:
-                return self.nxtbrick.get_battery_level()
+                return self.nxtbricks[self.active_nxt].get_battery_level()
             except:
                 raise logoerror(ERROR)
         else:
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtrefresh(self):
-        try:
-            self.nxtbrick.get_device_info()
-        except:
-            self.nxtbrick = nxt.locator.find_one_brick()
+        self.nxt_find()
+        #self.nxtbrick.get_device_info()
 
         self.change_color_blocks()
 
         self.tw.show_toolbar_palette(palette_name_to_index('nxt-motors'), regenerate=True, show=False)
         self.tw.show_toolbar_palette(palette_name_to_index('nxt-sensors'), regenerate=True, show=False)
 
-        if self.nxtbrick:
-            raise logoerror(BRICK_FOUND)
+        if self.nxtbricks:
+            n = len(self.nxtbricks)
+            raise logoerror(BRICK_FOUND % int(n))
         else:
             raise logoerror(BRICK_NOT_FOUND)
 
@@ -694,7 +723,7 @@ class Nxt_plugin(Plugin):
         for block in self.tw.block_list.list:
             if block.type in ['proto', 'block']:
                 if block.name in nxt_palette_blocks:
-                    if (self.nxtbrick) or (block.name == 'nxtrefresh'):
+                    if (self.nxtbricks) or (block.name == 'nxtrefresh'):
                         special_block_colors[block.name] = COLOR_PRESENT[:]
                     else:
                         special_block_colors[block.name] = COLOR_NOTPRESENT[:]
