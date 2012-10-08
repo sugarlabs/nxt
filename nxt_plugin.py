@@ -66,6 +66,7 @@ ERROR = _('An error has occurred: check all connections and try to reconnect.')
 
 BRICK_FOUND = _('NXT found')
 BRICK_NOT_FOUND = _('NXT not found')
+BRICK_INDEX_NOT_FOUND = _('The brick number %s was not found')
 
 MINIMO_INTERVALO = 0.2
 
@@ -81,6 +82,8 @@ class Nxt_plugin(Plugin):
 
         BUS=="usb", ATTRS{idVendor}=="0694", ATTRS{idProduct}=="0002", MODE="0666"
         """
+        self.nxtbricks = []
+        self.active_nxt = 0
 
         self.nxt_find()
 
@@ -101,7 +104,7 @@ class Nxt_plugin(Plugin):
         # Palette of Motors
         palette_motors = make_palette('nxt-motors', COLOR_NOTPRESENT, _('Palette of LEGO NXT blocks of motors'))
 
-        if self.nxtbrick:
+        if self.nxtbricks:
             COLOR = COLOR_PRESENT
         else:
             COLOR = COLOR_NOTPRESENT
@@ -117,7 +120,7 @@ class Nxt_plugin(Plugin):
         special_block_colors['nxtrefresh'] = COLOR_PRESENT[:]
 
         primitive_dictionary['nxtselect'] = self._prim_nxtselect
-        palette.add_block('nxtselect',
+        palette_motors.add_block('nxtselect',
                           style='basic-style-1arg',
                           default = 1,
                           label=_('NxT'),
@@ -128,9 +131,9 @@ class Nxt_plugin(Plugin):
         special_block_colors['nxtselect'] = COLOR_PRESENT[:]
 
         primitive_dictionary['nxtcount'] = self._prim_nxtcount
-        palette.add_block('nxtcount',
+        palette_motors.add_block('nxtcount',
                           style='box-style',
-                          label=_('number of NxT'),
+                          label=_('number of NxTs'),
                           help_string=_('number of NxT devices'),
                           prim_name = 'nxtcount')
         self.tw.lc.def_prim('nxtcount', 0, lambda self:
@@ -669,6 +672,18 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(BRICK_NOT_FOUND)
 
+    def _prim_nxtselect(self, i):
+        n = len(self.nxtbricks)
+        # The list index begin in 0
+        i = i - 1
+        if (i <= n) and not(i == 0):
+            self.active_nxt = i
+        else:
+            raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
+
+    def _prim_nxtcount(self):
+        return len(self.nxtbricks)
+
     ############################### Useful functions ##########################
 
     def change_color_blocks(self):
@@ -686,13 +701,13 @@ class Nxt_plugin(Plugin):
                     block.refresh()
 
     def nxt_find(self):
-        self.nxtbrick = []
+        self.nxtbricks = []
         bricks = nxt.locator.find_bricks()
 
         for s in bricks:
             try:
                 b = s.connect()
-                self.bricks.append(b)
+                self.nxtbricks.append(b)
             except:
                 pass
 
