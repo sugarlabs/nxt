@@ -45,9 +45,9 @@ from TurtleArt.tautils import debug_output
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
 import nxt
-from nxt.locator import find_bricks
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
+from nxt.usbsock import *
 
 NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('grey'): 5}
 NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
@@ -704,8 +704,8 @@ class Nxt_plugin(Plugin):
     def _prim_nxtselect(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
-        i = i - 1
-        if (i <= n) and not(i == 0):
+        i = int(i - 1)
+        if (i <= n) and (i >= 0):
             self.active_nxt = i
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
@@ -730,10 +730,25 @@ class Nxt_plugin(Plugin):
                     block.refresh()
 
     def nxt_find(self):
-        self.nxtbricks = []
-        bricks = nxt.locator.find_bricks()
 
-        for s in bricks:
+        for b in self.nxtbricks:
+            try:
+                b.close()
+            except:
+                pass
+            try:
+                b.__del__()
+            except:
+                pass
+        self.nxtbricks = []
+
+        socks_list = []
+        for bus in usb.busses():
+            for device in bus.devices:
+                if device.idVendor == ID_VENDOR_LEGO and device.idProduct == ID_PRODUCT_NXT:
+                    socks_list.append(USBSock(device))
+
+        for s in socks_list:
             try:
                 b = s.connect()
                 self.nxtbricks.append(b)
