@@ -705,7 +705,7 @@ class Nxt_plugin(Plugin):
         n = len(self.nxtbricks)
         # The list index begin in 0
         i = int(i - 1)
-        if (i <= n) and (i >= 0):
+        if (i < n) and (i >= 0):
             self.active_nxt = i
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
