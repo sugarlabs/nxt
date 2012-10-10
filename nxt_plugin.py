@@ -724,15 +724,18 @@ class Nxt_plugin(Plugin):
     def _prim_nxtcount(self):
         return len(self.nxtbricks)
 
-    def _prim_nxtbrickname(self):
+    def _prim_nxtbrickname(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
         i = int(i - 1)
         if (i < n) and (i >= 0):
-            info = self.nxtbricks[i].get_device_info()
-            name = info[0]
-            name = name.strip('\x00')
-            return name
+            try:
+                info = self.nxtbricks[i].get_device_info()
+                name = info[0]
+                name = name.replace('\x00', '')
+                return name
+            except:
+                raise logoerror(ERROR)
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
 
