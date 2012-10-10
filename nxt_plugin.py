@@ -159,6 +159,17 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtcount']())
         special_block_colors['nxtcount'] = COLOR[:]
 
+        primitive_dictionary['nxtbrickname'] = self._prim_nxtbrickname
+        palette_motors.add_block('nxtbrickname',
+                  style='number-style-1arg',
+                  label=_('brick name'),
+                  default=[1],
+                  help_string=_('Get the name of a brick.'),
+                  prim_name='nxtbrickname')
+        self.tw.lc.def_prim('nxtbrickname', 1, lambda self, x:
+            primitive_dictionary['nxtbrickname'](x))
+        special_block_colors['nxtbrickname'] = COLOR[:]
+
         primitive_dictionary['nxtplaytone'] = self._prim_nxtplaytone
         palette_motors.add_block('nxtplaytone',
                   style='basic-style-2arg',
@@ -712,6 +723,18 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtcount(self):
         return len(self.nxtbricks)
+
+    def _prim_nxtbrickname(self):
+        n = len(self.nxtbricks)
+        # The list index begin in 0
+        i = int(i - 1)
+        if (i < n) and (i >= 0):
+            info = self.nxtbricks[i].get_device_info()
+            name = info[0]
+            name = name.strip('\x00')
+            return name
+        else:
+            raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
 
     ############################### Useful functions ##########################
 
