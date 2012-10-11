@@ -68,8 +68,6 @@ BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
 BRICK_INDEX_NOT_FOUND = _('The brick number %s was not found')
 
-MINIMO_INTERVALO = 0.2
-
 
 class Nxt_plugin(Plugin):
 
@@ -87,36 +85,11 @@ class Nxt_plugin(Plugin):
 
         self.nxt_find()
 
-        self.time_port_1 = []
-        self.time_port_2 = []
-        self.time_port_3 = []
-        self.time_port_4 = []
-
-        self.res_port_1 = []
-        self.res_port_2 = []
-        self.res_port_3 = []
-        self.res_port_4 = []
-
-        self.motor_pos_A = []
-        self.motor_pos_B = []
-        self.motor_pos_C = []
-
-        now = time.time()
-
         for i in range(len(self.nxtbricks)):
-            self.time_port_1.append(now)
-            self.time_port_2.append(now)
-            self.time_port_3.append(now)
-            self.time_port_4.append(now)
-
-            self.res_port_1.append(-1)
-            self.res_port_2.append(-1)
-            self.res_port_3.append(-1)
-            self.res_port_4.append(-1)
-
             self.motor_pos_A.append(0)
             self.motor_pos_B.append(0)
             self.motor_pos_C.append(0)
+
 
     def setup(self):
 
@@ -539,31 +512,8 @@ class Nxt_plugin(Plugin):
         """ Read sensor at specified port"""
         if (port in NXT_SENSOR_PORTS):
             if self.nxtbricks:
-                actual = time.time()
-                res_l = -1
                 port_aux = NXT_SENSOR_PORTS[port]
-                if (port_aux == PORT_1):
-                    if ((actual - self.time_port_1[self.active_nxt]) > MINIMO_INTERVALO):
-                        self.time_port_1[self.active_nxt] = actual
-                        res_l = self.res_port_1[self.active_nxt]
-                elif (port_aux == PORT_2):
-                    if ((actual - self.time_port_2[self.active_nxt]) > MINIMO_INTERVALO):
-                        self.time_port_2[self.active_nxt] = actual
-                        res_l = self.res_port_2[self.active_nxt]
-                elif (port_aux == PORT_3):
-                    if ((actual - self.time_port_3[self.active_nxt]) > MINIMO_INTERVALO):
-                        self.time_port_3[self.active_nxt] = actual
-                        res_l = self.res_port_3[self.active_nxt]
-                elif (port_aux == PORT_4):
-                    if ((actual - self.time_port_4[self.active_nxt]) > MINIMO_INTERVALO):
-                        self.time_port_4[self.active_nxt] = actual
-                        res_l = self.res_port_4[self.active_nxt]
-
-                res_f = self._aux_read_sensor(port_aux, sensor)
-                if (res_f == -1):
-                    return res_l
-                else:
-                    return res_f
+                return self._aux_read_sensor(port_aux, sensor)
             else:
                 return -1
         else:
