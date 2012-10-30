@@ -78,9 +78,12 @@ class Nxt_plugin(Plugin):
         Adding a rule to /etc/udev/rules.d call: /etc/udev/rules.d/99-lego.rules
         with:
 
-        BUS=="usb", ATTRS{idVendor}=="0694", ATTRS{idProduct}=="0002", MODE="0666"
+        SUBSYSTEM=="usb", ATTRS{idVendor}=="0694", ATTRS{idProduct}=="0002", MODE="0666"
         """
         self.nxtbricks = []
+        self.motor_pos_A = []
+        self.motor_pos_B = []
+        self.motor_pos_C = []
         self.active_nxt = 0
 
         self.nxt_find()
