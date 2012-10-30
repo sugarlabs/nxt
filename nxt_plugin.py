@@ -152,7 +152,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
         palette_motors.add_block('nxtturnmotor',
                   style='basic-style-3arg',
-                  label=[_('turn motor\nrotations'), _('port'), _('power')],
+                  label=[_('turn motor\n\n'), _('port'), _('power'), _('rotations')],
                   default=['None', 1, 100],
                   help_string=_('turn a motor'),
                   prim_name='nxtturnmotor')
@@ -163,7 +163,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtsyncmotors'] = self._prim_nxtsyncmotors
         palette_motors.add_block('nxtsyncmotors',
                   style='basic-style-3arg',
-                  label=[_('synchronize motors\nsteering'), _('power'), _('rotations')],
+                  label=[_('synchronize\n\nmotors'), _('power'), _('rotations'), _('steering')],
                   default=[100, 0, 1],
                   help_string=_('synchronize two motors connected in PORT B and PORT C'),
                   prim_name='nxtsyncmotors')
