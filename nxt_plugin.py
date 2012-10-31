@@ -50,8 +50,8 @@ from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasoni
 from nxt.usbsock import *
 
 NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('grey'): 5}
-NXT_MOTOR_PORTS = {_('PORT A'): PORT_A, _('PORT B'): PORT_B, _('PORT C'): PORT_C}
-NXT_SENSOR_PORTS = {_('PORT 1'): PORT_1, _('PORT 2'): PORT_2, _('PORT 3'): PORT_3, _('PORT 4'): PORT_4}
+NXT_MOTOR_PORTS = {'A': PORT_A, 'B': PORT_B, 'C': PORT_C}
+NXT_SENSOR_PORTS = {'1': PORT_1, '2': PORT_2, '3': PORT_3, '4': PORT_4}
 
 colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'], CONSTANTS['red'], WHITE]
 
@@ -60,8 +60,10 @@ COLOR_PRESENT = ["#00FF00","#008000"]
 
 
 ERROR_BRICK = _('Please check the connection with the brick.')
-ERROR_PORT = _('Please check the port.')
+ERROR_PORT_M = _('Invalid port "%s". Port must be: PORT A, B or C.')
+ERROR_PORT_S = _('Invalid port "%s". Port must be: PORT 1, 2, 3 or 4.')
 ERROR_POWER = _('The value of power must be between -127 to 127.')
+ERROR_NO_NUMBER = _('The parameter must be a integer no "%s".')
 ERROR = _('An error has occurred: check all connections and try to reconnect.')
 
 BRICK_FOUND = _('NXT found %s bricks')
@@ -418,8 +420,10 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtturnmotor(self, port, turns, power):
         if self.nxtbricks:
-            if (port in NXT_MOTOR_PORTS):
-                port = NXT_MOTOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port_up]
                 if not((power < -127) or (power > 127)):
                     if turns < 0:
                         turns = abs(turns)
@@ -433,7 +437,7 @@ class Nxt_plugin(Plugin):
                 else:
                     raise logoerror(ERROR_POWER)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_M & port)
         else:
             raise logoerror(ERROR_BRICK)
 
@@ -483,36 +487,38 @@ class Nxt_plugin(Plugin):
         return _('sound')
 
     def _prim_nxtport1(self):
-        return _('PORT 1')
+        return '1'
 
     def _prim_nxtport2(self):
-        return _('PORT 2')
+        return '2'
 
     def _prim_nxtport3(self):
-        return _('PORT 3')
+        return '3'
 
     def _prim_nxtport4(self):
-        return _('PORT 4')
+        return '4'
 
     def _prim_nxtporta(self):
-        return _('PORT A')
+        return 'A'
 
     def _prim_nxtportb(self):
-        return _('PORT B')
+        return 'B'
 
     def _prim_nxtportc(self):
-        return _('PORT C')
+        return 'C'
 
     def _prim_nxtreadsensor(self, port, sensor):
         """ Read sensor at specified port"""
-        if (port in NXT_SENSOR_PORTS):
+        port = str(port)
+        port_up = port.upper()
+        if (port_up in NXT_SENSOR_PORTS):
             if self.nxtbricks:
-                port_aux = NXT_SENSOR_PORTS[port]
+                port_aux = NXT_SENSOR_PORTS[port_up]
                 return self._aux_read_sensor(port_aux, sensor)
             else:
                 return -1
         else:
-            raise logoerror(ERROR_PORT)
+            raise logoerror(ERROR_PORT_S % port)
 
     def _aux_read_sensor(self, port, sensor):
         res = -1
@@ -539,8 +545,10 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtstartmotor(self, port, power):
         if self.nxtbricks:
-            if (port in NXT_MOTOR_PORTS):
-                port = NXT_MOTOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port_up]
                 if not((power < -127) or (power > 127)):
                     try:
                         m = Motor(self.nxtbricks[self.active_nxt], port)
@@ -550,28 +558,32 @@ class Nxt_plugin(Plugin):
                 else:
                     raise logoerror(ERROR_POWER)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_M % port)
         else:
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtbrake(self, port):
         if self.nxtbricks:
-            if (port in NXT_MOTOR_PORTS):
-                port = NXT_MOTOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port_up]
                 try:
                     m = Motor(self.nxtbricks[self.active_nxt], port)
                     m.brake()
                 except:
                     raise logoerror(ERROR)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_M % port)
         else:
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsetcolor(self, port, color):
         if self.nxtbricks:
-            if (port in NXT_SENSOR_PORTS):
-                port = NXT_SENSOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_SENSOR_PORTS):
+                port = NXT_SENSOR_PORTS[port_up]
                 if color == WHITE:
                     color = Type.COLORFULL
                 elif color == CONSTANTS['red']:
@@ -587,14 +599,16 @@ class Nxt_plugin(Plugin):
                 except:
                     raise logoerror(ERROR)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_S % port)
         else:
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorreset(self, port):
         if self.nxtbricks:
-            if (port in NXT_MOTOR_PORTS):
-                port = NXT_MOTOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port_up]
                 try:
                     m = Motor(self.nxtbricks[self.active_nxt], port)
                     t = m.get_tacho()
@@ -608,14 +622,16 @@ class Nxt_plugin(Plugin):
                 except:
                     raise logoerror(ERROR)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_M % port)
         else:
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtmotorposition(self, port):
         if self.nxtbricks:
-            if (port in NXT_MOTOR_PORTS):
-                port = NXT_MOTOR_PORTS[port]
+            port = str(port)
+            port_up = port.upper()
+            if (port_up in NXT_MOTOR_PORTS):
+                port = NXT_MOTOR_PORTS[port_up]
                 try:
                     m = Motor(self.nxtbricks[self.active_nxt], port)
                     t = m.get_tacho()
@@ -629,7 +645,7 @@ class Nxt_plugin(Plugin):
                 except:
                     raise logoerror(ERROR)
             else:
-                raise logoerror(ERROR_PORT)
+                raise logoerror(ERROR_PORT_M % port)
         else:
             raise logoerror(ERROR_BRICK)
 
@@ -660,7 +676,10 @@ class Nxt_plugin(Plugin):
     def _prim_nxtselect(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
-        i = int(i - 1)
+        try:
+            i = int(i - 1)
+        except:
+            raise logoerror(ERROR_NO_NUMBER % str(i))
         if (i < n) and (i >= 0):
             self.active_nxt = i
         else:
@@ -672,7 +691,10 @@ class Nxt_plugin(Plugin):
     def _prim_nxtbrickname(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
-        i = int(i - 1)
+        try:
+            i = int(i - 1)
+        except:
+            raise logoerror(ERROR_NO_NUMBER % str(i))
         if (i < n) and (i >= 0):
             try:
                 info = self.nxtbricks[i].get_device_info()
