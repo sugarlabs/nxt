@@ -63,12 +63,12 @@ ERROR_BRICK = _('Please check the connection with the brick')
 ERROR_PORT_M = _("Invalid port '%s'. Port must be: PORT A, B or C")
 ERROR_PORT_S = _("Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4")
 ERROR_POWER = _('The value of power must be between -127 to 127')
-ERROR_NO_NUMBER = _("The parameter must be a integer no '%s'")
+ERROR_NO_NUMBER = _("The parameter must be a integer, not '%s'")
 ERROR = _('An error has occurred: check all connections and try to reconnect')
 
 BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
-BRICK_INDEX_NOT_FOUND = _('The brick number %s was not found')
+BRICK_INDEX_NOT_FOUND = _('Brick number %s was not found')
 
 
 class Nxt_plugin(Plugin):
@@ -112,8 +112,8 @@ class Nxt_plugin(Plugin):
         palette_motors.add_block('nxtselect',
                           style='basic-style-1arg',
                           default = 1,
-                          label=_('NxT'),
-                          help_string=_('set current NxT device'),
+                          label=_('NXT'),
+                          help_string=_('set current NXT device'),
                           prim_name = 'nxtselect')
         self.tw.lc.def_prim('nxtselect', 1, lambda self, n: 
             primitive_dictionary['nxtselect'](n))
@@ -122,8 +122,8 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtcount'] = self._prim_nxtcount
         palette_motors.add_block('nxtcount',
                           style='box-style',
-                          label=_('number of NxTs'),
-                          help_string=_('number of NxT devices'),
+                          label=_('number of NXTs'),
+                          help_string=_('number of NXT devices'),
                           prim_name = 'nxtcount')
         self.tw.lc.def_prim('nxtcount', 0, lambda self:
             primitive_dictionary['nxtcount']())

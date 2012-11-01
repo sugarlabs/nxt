@@ -80,7 +80,7 @@ msgstr "NXT no encontrado"
 
 #: nxt_plugin.py:71
 #, python-format
-msgid "The brick number %s was not found"
+msgid "Brick number %s was not found"
 msgstr "El brick número %s no fue encontrado"
 
 #: nxt_plugin.py:94
@@ -96,19 +96,19 @@ msgid "Search for a connected NXT brick."
 msgstr "Busca por bricks NXT conectados."
 
 #: nxt_plugin.py:115
-msgid "NxT"
-msgstr "NxT"
+msgid "NXT"
+msgstr "NXT"
 
 #: nxt_plugin.py:116
-msgid "set current NxT device"
+msgid "set current NXT device"
 msgstr "setea el dispositivo NXT actual"
 
 #: nxt_plugin.py:125
-msgid "number of NxTs"
+msgid "number of NXTs"
 msgstr "número de NXTs"
 
 #: nxt_plugin.py:126
-msgid "number of NxT devices"
+msgid "number of NXT devices"
 msgstr "número de dispositivos NXT"
 
 #: nxt_plugin.py:135
