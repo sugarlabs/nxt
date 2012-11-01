@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-31 22:07-0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: nxt_plugin.py:52 nxt_plugin.py:317 nxt_plugin.py:472 nxt_plugin.py:534
+msgid "touch"
+msgstr ""
+
+#: nxt_plugin.py:52 nxt_plugin.py:327 nxt_plugin.py:475 nxt_plugin.py:532
+msgid "ultrasonic"
+msgstr ""
+
+#: nxt_plugin.py:52 nxt_plugin.py:357 nxt_plugin.py:367 nxt_plugin.py:478
+#: nxt_plugin.py:526
+msgid "color"
+msgstr ""
+
+#: nxt_plugin.py:52 nxt_plugin.py:287 nxt_plugin.py:481 nxt_plugin.py:528
+msgid "light"
+msgstr ""
+
+#: nxt_plugin.py:52 nxt_plugin.py:347 nxt_plugin.py:487 nxt_plugin.py:536
+msgid "sound"
+msgstr ""
+
+#: nxt_plugin.py:52 nxt_plugin.py:297 nxt_plugin.py:484 nxt_plugin.py:538
+msgid "grey"
+msgstr ""
+
+#: nxt_plugin.py:62
+msgid "Please check the connection with the brick"
+msgstr ""
+
+#: nxt_plugin.py:63
+#, python-format
+msgid "Invalid port '%s'. Port must be: PORT A, B or C"
+msgstr ""
+
+#: nxt_plugin.py:64
+#, python-format
+msgid "Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4"
+msgstr ""
+
+#: nxt_plugin.py:65
+msgid "The value of power must be between -127 to 127"
+msgstr ""
+
+#: nxt_plugin.py:66
+#, python-format
+msgid "The parameter must be a integer no '%s'"
+msgstr ""
+
+#: nxt_plugin.py:67
+msgid "An error has occurred: check all connections and try to reconnect"
+msgstr ""
+
+#: nxt_plugin.py:69
+#, python-format
+msgid "NXT found %s bricks"
+msgstr ""
+
+#: nxt_plugin.py:70
+msgid "NXT not found"
+msgstr ""
+
+#: nxt_plugin.py:71
+#, python-format
+msgid "The brick number %s was not found"
+msgstr ""
+
+#: nxt_plugin.py:94
+msgid "Palette of LEGO NXT blocks of motors"
+msgstr ""
+
+#: nxt_plugin.py:104
+msgid "refresh NXT"
+msgstr ""
+
+#: nxt_plugin.py:106
+msgid "Search for a connected NXT brick."
+msgstr ""
+
+#: nxt_plugin.py:115
+msgid "NxT"
+msgstr ""
+
+#: nxt_plugin.py:116
+msgid "set current NxT device"
+msgstr ""
+
+#: nxt_plugin.py:125
+msgid "number of NxTs"
+msgstr ""
+
+#: nxt_plugin.py:126
+msgid "number of NxT devices"
+msgstr ""
+
+#: nxt_plugin.py:135
+msgid "brick name"
+msgstr ""
+
+#: nxt_plugin.py:137
+msgid "Get the name of a brick."
+msgstr ""
+
+#: nxt_plugin.py:146
+msgid "play tone"
+msgstr ""
+
+#: nxt_plugin.py:146
+msgid "frequency"
+msgstr ""
+
+#: nxt_plugin.py:146
+msgid "time"
+msgstr ""
+
+#: nxt_plugin.py:148
+msgid "Play a tone at frequency for time."
+msgstr ""
+
+#: nxt_plugin.py:157
+msgid ""
+"turn motor\n"
+"\n"
+msgstr ""
+
+#: nxt_plugin.py:157 nxt_plugin.py:209 nxt_plugin.py:267 nxt_plugin.py:367
+msgid "port"
+msgstr ""
+
+#: nxt_plugin.py:157 nxt_plugin.py:168 nxt_plugin.py:209
+msgid "power"
+msgstr ""
+
+#: nxt_plugin.py:157 nxt_plugin.py:168
+msgid "rotations"
+msgstr ""
+
+#: nxt_plugin.py:159
+msgid "turn a motor"
+msgstr ""
+
+#: nxt_plugin.py:168
+msgid ""
+"synchronize\n"
+"\n"
+"motors"
+msgstr ""
+
+#: nxt_plugin.py:168
+msgid "steering"
+msgstr ""
+
+#: nxt_plugin.py:170
+msgid "synchronize two motors connected in PORT B and PORT C"
+msgstr ""
+
+#: nxt_plugin.py:179
+msgid "PORT A"
+msgstr ""
+
+#: nxt_plugin.py:180
+msgid "PORT A of the brick"
+msgstr ""
+
+#: nxt_plugin.py:189
+msgid "PORT B"
+msgstr ""
+
+#: nxt_plugin.py:190
+msgid "PORT B of the brick"
+msgstr ""
+
+#: nxt_plugin.py:199
+msgid "PORT C"
+msgstr ""
+
+#: nxt_plugin.py:200
+msgid "PORT C of the brick"
+msgstr ""
+
+#: nxt_plugin.py:209
+msgid "start motor"
+msgstr ""
+
+#: nxt_plugin.py:211
+msgid "Run a motor forever."
+msgstr ""
+
+#: nxt_plugin.py:220
+msgid "brake motor"
+msgstr ""
+
+#: nxt_plugin.py:222
+msgid "Stop a specified motor."
+msgstr ""
+
+#: nxt_plugin.py:231
+msgid "reset motor"
+msgstr ""
+
+#: nxt_plugin.py:233
+msgid "Reset the motor counter."
+msgstr ""
+
+#: nxt_plugin.py:242
+msgid "motor position"
+msgstr ""
+
+#: nxt_plugin.py:244
+msgid "Get the motor position."
+msgstr ""
+
+#: nxt_plugin.py:252
+msgid "Palette of LEGO NXT blocks of sensors"
+msgstr ""
+
+#: nxt_plugin.py:257
+msgid "PORT 1"
+msgstr ""
+
+#: nxt_plugin.py:258
+msgid "PORT 1 of the brick"
+msgstr ""
+
+#: nxt_plugin.py:267
+msgid "read"
+msgstr ""
+
+#: nxt_plugin.py:267
+msgid "sensor"
+msgstr ""
+
+#: nxt_plugin.py:268
+msgid "Read sensor output."
+msgstr ""
+
+#: nxt_plugin.py:277
+msgid "PORT 2"
+msgstr ""
+
+#: nxt_plugin.py:278
+msgid "PORT 2 of the brick"
+msgstr ""
+
+#: nxt_plugin.py:288
+msgid "light sensor"
+msgstr ""
+
+#: nxt_plugin.py:298
+msgid "grey sensor"
+msgstr ""
+
+#: nxt_plugin.py:307
+msgid "PORT 3"
+msgstr ""
+
+#: nxt_plugin.py:308
+msgid "PORT 3 of the brick"
+msgstr ""
+
+#: nxt_plugin.py:318
+msgid "touch sensor"
+msgstr ""
+
+#: nxt_plugin.py:328
+msgid "distance sensor"
+msgstr ""
+
+#: nxt_plugin.py:337
+msgid "PORT 4"
+msgstr ""
+
+#: nxt_plugin.py:338
+msgid "PORT 4 of the brick"
+msgstr ""
+
+#: nxt_plugin.py:348
+msgid "sound sensor"
+msgstr ""
+
+#: nxt_plugin.py:358
+msgid "color sensor"
+msgstr ""
+
+#: nxt_plugin.py:367
+msgid "set light"
+msgstr ""
+
+#: nxt_plugin.py:368
+msgid "Set color sensor light."
+msgstr ""
+
+#: nxt_plugin.py:377
+msgid "battery level"
+msgstr ""
+
+#: nxt_plugin.py:378
+msgid "Get battery level of the brick"
+msgstr ""
