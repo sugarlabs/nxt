@@ -39,7 +39,7 @@ msgid "sound"
 msgstr "sonido"
 
 #: nxt_plugin.py:52 nxt_plugin.py:297 nxt_plugin.py:484 nxt_plugin.py:538
-msgid "grey"
+msgid "gray"
 msgstr "grises"
 
 #: nxt_plugin.py:62
@@ -62,7 +62,7 @@ msgstr "El valor de potencia debe estar entre -127 y 127"
 
 #: nxt_plugin.py:66
 #, python-format
-msgid "The parameter must be a integer no '%s'"
+msgid "The parameter must be a integer, not '%s'"
 msgstr "El parámetro debe ser un entero, no '%s'"
 
 #: nxt_plugin.py:67
@@ -270,7 +270,7 @@ msgid "light sensor"
 msgstr "sensor de luz"
 
 #: nxt_plugin.py:298
-msgid "grey sensor"
+msgid "gray sensor"
 msgstr "sensor de grises"
 
 #: nxt_plugin.py:307
