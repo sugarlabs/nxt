@@ -437,7 +437,7 @@ class Nxt_plugin(Plugin):
                 else:
                     raise logoerror(ERROR_POWER)
             else:
-                raise logoerror(ERROR_PORT_M & port)
+                raise logoerror(ERROR_PORT_M % port)
         else:
             raise logoerror(ERROR_BRICK)
 
