@@ -638,9 +638,9 @@ class Nxt_plugin(Plugin):
 
         if self.nxtbricks:
             n = len(self.nxtbricks)
-            raise logoerror(BRICK_FOUND % int(n))
+            self.tw.showlabel('print', BRICK_FOUND % int(n))
         else:
-            raise logoerror(BRICK_NOT_FOUND)
+            self.tw.showlabel('print', BRICK_NOT_FOUND)
 
     def _prim_nxtselect(self, i):
         n = len(self.nxtbricks)
