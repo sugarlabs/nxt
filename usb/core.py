@@ -53,7 +53,7 @@ _DEFAULT_TIMEOUT = 1000
 
 def _set_attr(input, output, fields):
     for f in fields:
-        setattr(output, f, int(getattr(input, f)))
+       setattr(output, f, getattr(input, f))
 
 class _ResourceManager(object):
     def __init__(self, dev, backend):
@@ -125,12 +125,12 @@ class _ResourceManager(object):
             self._claimed_intf.remove(i)
 
     def managed_set_interface(self, device, intf, alt):
-        if intf is None:
-            i = self.get_interface(device, intf)
-        elif isinstance(intf, Interface):
+        if isinstance(intf, Interface):
             i = intf
         else:
             cfg = self.get_active_configuration(device)
+            if intf is None:
+                intf = cfg[(0,0)].bInterfaceNumber
             if alt is not None:
                 i = util.find_descriptor(cfg, bInterfaceNumber=intf, bAlternateSetting=alt)
             else:
@@ -144,13 +144,12 @@ class _ResourceManager(object):
     def get_interface(self, device, intf):
         # TODO: check the viability of issuing a GET_INTERFACE
         # request when we don't have a alternate setting cached
-        if intf is None:
-            cfg = self.get_active_configuration(device)
-            return cfg[(0,0)]
-        elif isinstance(intf, Interface):
+        if isinstance(intf, Interface):
             return intf
         else:
             cfg = self.get_active_configuration(device)
+            if intf is None:
+                intf = cfg[(0,0)].bInterfaceNumber
             if intf in self._alt_set:
                 return util.find_descriptor(cfg,
                                             bInterfaceNumber=intf,
@@ -528,7 +527,8 @@ class Device(object):
                     'iSerialNumber',
                     'bNumConfigurations',
                     'address',
-                    'bus'
+                    'bus',
+                    'port_number'
                 )
             )
 
@@ -542,6 +542,11 @@ class Device(object):
         else:
             self.address = None
 
+        if desc.port_number is not None:
+            self.port_number = int(desc.port_number)
+        else:
+            self.port_number = None
+            
     def set_configuration(self, configuration = None):
         r"""Set the active configuration.
         
@@ -830,8 +835,7 @@ def find(find_all=False, backend = None, custom_match = None, **args):
     def device_iter(k, v):
         for dev in backend.enumerate_devices():
             d = Device(dev, backend)
-            if (custom_match is None or custom_match(d)) and \
-                _interop._reduce(
+            if  _interop._reduce(
                         lambda a, b: a and b,
                         map(
                             operator.eq,
@@ -839,7 +843,7 @@ def find(find_all=False, backend = None, custom_match = None, **args):
                             map(lambda i: getattr(d, i), k)
                         ),
                         True
-                    ):
+                    ) and (custom_match is None or custom_match(d)):
                 yield d
 
     if backend is None:

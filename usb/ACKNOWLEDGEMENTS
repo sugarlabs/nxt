@@ -1,6 +1,13 @@
 This is a list of people who has contributed to PyUSB 1.0 development.
 If I forgot you, please email me.
 
+PyUSB 1.0.0 (alpha 4)
+---------------------
+
+- Stefano Di Martino: the port number patch.
+- Simon Norberg: several bug fixes.
+- iThompson: fixed tab errors in Python 3.3.
+
 PyUSB 1.0.0 (alpha 3)
 ---------------------
 
