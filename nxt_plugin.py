@@ -189,6 +189,16 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtportc', 0, lambda self:
             primitive_dictionary['nxtportc']())
 
+        primitive_dictionary['nxtsyncmotorsforever'] = self._prim_nxtsyncmotorsforever
+        palette_motors.add_block('nxtsyncmotorsforever',
+                  style='basic-style-2arg',
+                  label=[_('synchronize\nmotors'), _('power'), _('steering')],
+                  default=[100, 0],
+                  help_string=_('synchronize two motors connected in PORT B and PORT C'),
+                  prim_name='nxtsyncmotorsforever')
+        self.tw.lc.def_prim('nxtsyncmotorsforever', 2, lambda self, x, y:
+            primitive_dictionary['nxtsyncmotorsforever'](x, y))
+
         primitive_dictionary['nxtstartmotor'] = self._prim_nxtstartmotor
         palette_motors.add_block('nxtstartmotor',
                   style='basic-style-2arg',
@@ -421,6 +431,26 @@ class Nxt_plugin(Plugin):
                     motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
                     syncmotors = SynchronizedMotors(motorB, motorC, steering)
                     syncmotors.turn(power, int(turns*360))
+                except:
+                    raise logoerror(ERROR)
+            else:
+                raise logoerror(ERROR_POWER)
+        else:
+            raise logoerror(ERROR_BRICK)
+
+    def _prim_nxtsyncmotorsforever(self, power, steering):
+        print 'power', power
+        print 'steering', steering
+        if self.nxtbricks:
+            if not((power < -127) or (power > 127)):
+                if turns < 0:
+                    turns = abs(turns)
+                    power = -1 * power
+                try:
+                    motorB = Motor(self.nxtbricks[self.active_nxt], PORT_B)
+                    motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
+                    syncmotors = SynchronizedMotors(motorB, motorC, steering)
+                    syncmotors.run(power)
                 except:
                     raise logoerror(ERROR)
             else:
