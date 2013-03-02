@@ -145,7 +145,7 @@ class Nxt_plugin(Plugin):
         primitive_dictionary['nxtturnmotor'] = self._prim_nxtturnmotor
         palette_motors.add_block('nxtturnmotor',
                   style='basic-style-3arg',
-                  label=[_('turn motor\n\n'), _('port'), _('power'), _('rotations')],
+                  label=[_('turn motor\n\n'), _('port'), _('rotations'), _('power')],
                   default=['None', 1, 100],
                   help_string=_('turn a motor'),
                   prim_name='nxtturnmotor')
