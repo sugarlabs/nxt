@@ -439,13 +439,8 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def _prim_nxtsyncmotorsforever(self, power, steering):
-        print 'power', power
-        print 'steering', steering
         if self.nxtbricks:
             if not((power < -127) or (power > 127)):
-                if turns < 0:
-                    turns = abs(turns)
-                    power = -1 * power
                 try:
                     motorB = Motor(self.nxtbricks[self.active_nxt], PORT_B)
                     motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
