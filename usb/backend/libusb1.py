@@ -1,8 +1,8 @@
-# Copyright (C) 2009-2011 Wander Lairson Costa 
-# 
+# Copyright (C) 2009-2011 Wander Lairson Costa
+#
 # The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
-# 
+#
 # The authors hereby grant permission to use, copy, modify, distribute,
 # and license this software and its documentation for any purpose, provided
 # that existing copyright notices are retained in all copies and that this
@@ -12,13 +12,13 @@
 # and need not follow the licensing terms described here, provided that
 # the new terms are clearly indicated on the first page of each file where
 # they apply.
-# 
+#
 # IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
 # FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
 # ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
 # DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 # THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
@@ -182,6 +182,9 @@ def _load_library():
     if sys.platform != 'cygwin':
         candidates = ('usb-1.0', 'libusb-1.0', 'usb')
         for candidate in candidates:
+            if sys.platform == 'win32':
+                candidate = candidate + '.dll'
+
             libname = ctypes.util.find_library(candidate)
             if libname is not None: break
     else:
@@ -247,7 +250,7 @@ def _setup_prototypes(lib):
     lib.libusb_set_configuration.argtypes = [_libusb_device_handle, c_int]
 
     # int libusb_get_configuration(libusb_device_handle *dev,
-    #                              int *config)   
+    #                              int *config)
     lib.libusb_get_configuration.argtypes = [_libusb_device_handle, POINTER(c_int)]
 
     # int libusb_claim_interface(libusb_device_handle *dev,
@@ -340,7 +343,7 @@ def _setup_prototypes(lib):
     lib.libusb_control_transfer.argtypes = [
             _libusb_device_handle,
             c_uint8,
-            c_uint8, 
+            c_uint8,
             c_uint16,
             c_uint16,
             POINTER(c_ubyte),
@@ -642,7 +645,7 @@ class _LibUSB(usb.backend.IBackend):
         return transferred.value
 
     def __read(self, fn, dev_handle, ep, intf, size, timeout):
-        data = _interop.as_array((0,) * size)
+        data = _interop.as_array('\x00' * size)
         address, length = data.buffer_info()
         length *= data.itemsize
         transferred = c_int()
