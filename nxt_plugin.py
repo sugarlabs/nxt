@@ -27,7 +27,6 @@
 
 import os
 import sys
-import time
 
 from gettext import gettext as _
 
@@ -39,15 +38,12 @@ from TurtleArt.tapalette import special_block_colors
 from TurtleArt.tapalette import palette_blocks
 from TurtleArt.talogo import primitive_dictionary, logoerror
 from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
-from TurtleArt.tautils import debug_output
-
 
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
-import nxt
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
-from nxt.usbsock import *
+from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
 
 NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('gray'): 5}
 NXT_MOTOR_PORTS = {'A': PORT_A, 'B': PORT_B, 'C': PORT_C}
