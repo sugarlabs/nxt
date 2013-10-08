@@ -38,6 +38,7 @@ from TurtleArt.tapalette import special_block_colors
 from TurtleArt.tapalette import palette_blocks
 from TurtleArt.talogo import primitive_dictionary, logoerror
 from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
+from TurtleArt.tautils import debug_output
 
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
@@ -87,7 +88,9 @@ class Nxt_plugin(Plugin):
     def setup(self):
 
         # Palette of Motors
-        palette_motors = make_palette('nxt-motors', COLOR_NOTPRESENT, _('Palette of LEGO NXT blocks of motors'))
+        debug_output('creating %s palette' % _('nxt-motors'), self.tw.running_sugar)
+        palette_motors = make_palette('nxt-motors', COLOR_NOTPRESENT,
+                                    _('Palette of LEGO NXT blocks of motors'))
 
         primitive_dictionary['nxtrefresh'] = self._prim_nxtrefresh
         palette_motors.add_block('nxtrefresh',
@@ -236,6 +239,7 @@ class Nxt_plugin(Plugin):
             primitive_dictionary['nxtmotorposition'](x))
 
         # Palette of Sensors
+        debug_output('creating %s palette' % _('nxt-sensors'), self.tw.running_sugar)
         palette_sensors = make_palette('nxt-sensors', COLOR_NOTPRESENT,
                     _('Palette of LEGO NXT blocks of sensors'))
 
