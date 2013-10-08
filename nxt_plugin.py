@@ -376,14 +376,6 @@ class Nxt_plugin(Plugin):
             except:
                 pass
 
-    def goto_background(self):
-        # This gets called when your process is sent to the background
-        pass
-
-    def return_to_foreground(self):
-        # This gets called when your process returns from the background
-        pass
-
     def quit(self):
         # This gets called by the quit button
         for i in range(len(self.nxtbricks)):
