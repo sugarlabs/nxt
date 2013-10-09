@@ -646,13 +646,7 @@ class Nxt_plugin(Plugin):
 
     def _prim_nxtrefresh(self):
         self.nxt_find()
-        #self.nxtbrick.get_device_info()
-
         self.change_color_blocks()
-
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt-motors'), regenerate=True, show=False)
-        self.tw.show_toolbar_palette(palette_name_to_index('nxt-sensors'), regenerate=True, show=False)
-
         if self.nxtbricks:
             n = len(self.nxtbricks)
             self.tw.showlabel('print', BRICK_FOUND % int(n))
@@ -695,18 +689,20 @@ class Nxt_plugin(Plugin):
     ############################### Useful functions ##########################
 
     def change_color_blocks(self):
-        motors_blocks = palette_blocks[palette_name_to_index('nxt-motors')]
-        sensors_blocks = palette_blocks[palette_name_to_index('nxt-sensors')]
-        nxt_palette_blocks = motors_blocks + sensors_blocks
-
-        for block in self.tw.block_list.list:
-            if block.type in ['proto', 'block']:
-                if block.name in nxt_palette_blocks:
-                    if (self.nxtbricks) or (block.name == 'nxtrefresh'):
-                        special_block_colors[block.name] = COLOR_PRESENT[:]
-                    else:
-                        special_block_colors[block.name] = COLOR_NOTPRESENT[:]
-                    block.refresh()
+        index1 = palette_name_to_index('nxt-motors')
+        index2 = palette_name_to_index('nxt-sensors')
+        if (index1 is not None) and (index2 is not None):
+            nxt_palette_blocks = palette_blocks[index1] + palette_blocks[index2]
+            for block in self.tw.block_list.list:
+                if block.type in ['proto', 'block']:
+                    if block.name in nxt_palette_blocks:
+                        if (self.nxtbricks) or (block.name == 'nxtrefresh'):
+                            special_block_colors[block.name] = COLOR_PRESENT[:]
+                        else:
+                            special_block_colors[block.name] = COLOR_NOTPRESENT[:]
+                        block.refresh()
+            self.tw.regenerate_palette(index1)
+            self.tw.regenerate_palette(index2)
 
     def nxt_find(self):
 
