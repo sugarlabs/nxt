@@ -46,7 +46,7 @@ from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
 from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
 
-NXT_SENSORS = {_('touch'): 0, _('ultrasonic'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('gray'): 5}
+NXT_SENSORS = {_('button'): 0, _('distance'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('gray'): 5}
 NXT_MOTOR_PORTS = {'A': PORT_A, 'B': PORT_B, 'C': PORT_C}
 NXT_SENSOR_PORTS = {'1': PORT_1, '2': PORT_2, '3': PORT_3, '4': PORT_4}
 
@@ -297,23 +297,23 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtport3', 0, lambda self:
             primitive_dictionary['nxtport3']())
 
-        primitive_dictionary['nxttouch'] = self._prim_nxttouch
-        palette_sensors.add_block('nxttouch',
+        primitive_dictionary['nxtbutton'] = self._prim_nxtbutton
+        palette_sensors.add_block('nxtbutton',
                   style='box-style',
-                  label=_('touch'),
-                  help_string=_('touch sensor'),
-                  prim_name='nxttouch')
-        self.tw.lc.def_prim('nxttouch', 0, lambda self:
-            primitive_dictionary['nxttouch']())
+                  label=_('button'),
+                  help_string=_('button sensor'),
+                  prim_name='nxtbutton')
+        self.tw.lc.def_prim('nxtbutton', 0, lambda self:
+            primitive_dictionary['nxtbutton']())
 
-        primitive_dictionary['nxtultrasonic'] = self._prim_nxtultrasonic
-        palette_sensors.add_block('nxtultrasonic',
+        primitive_dictionary['nxtdistance'] = self._prim_nxtdistance
+        palette_sensors.add_block('nxtdistance',
                   style='box-style',
-                  label=_('ultrasonic'),
+                  label=_('distance'),
                   help_string=_('distance sensor'),
-                  prim_name='nxtultrasonic')
-        self.tw.lc.def_prim('nxtultrasonic', 0, lambda self:
-            primitive_dictionary['nxtultrasonic']())
+                  prim_name='nxtdistance')
+        self.tw.lc.def_prim('nxtdistance', 0, lambda self:
+            primitive_dictionary['nxtdistance']())
 
         primitive_dictionary['nxtport4'] = self._prim_nxtport4
         palette_sensors.add_block('nxtport4',
@@ -454,11 +454,11 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxttouch(self):
-        return _('touch')
+    def _prim_nxtbutton(self):
+        return _('button')
 
-    def _prim_nxtultrasonic(self):
-        return _('ultrasonic')
+    def _prim_nxtdistance(self):
+        return _('distance')
 
     def _prim_nxtcolor(self):
         return _('color')
@@ -515,9 +515,9 @@ class Nxt_plugin(Plugin):
                 light_sensor = Light(self.nxtbricks[self.active_nxt], port)
                 light_sensor.set_illuminated(False)
                 res = light_sensor.get_lightness()
-            elif sensor == _('ultrasonic'):
+            elif sensor == _('distance'):
                 res = Ultrasonic(self.nxtbricks[self.active_nxt], port).get_sample()
-            elif sensor == _('touch'):
+            elif sensor == _('button'):
                 res = Touch(self.nxtbricks[self.active_nxt], port).get_sample()
             elif sensor == _('sound'):
                 res = Sound(self.nxtbricks[self.active_nxt], port).get_sample()
