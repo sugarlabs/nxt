@@ -705,7 +705,6 @@ class Nxt_plugin(Plugin):
             self.tw.regenerate_palette(index2)
 
     def nxt_find(self):
-
         for b in self.nxtbricks:
             try:
                 b.close()
@@ -716,15 +715,18 @@ class Nxt_plugin(Plugin):
             except:
                 pass
         self.nxtbricks = []
-
-        for d in usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT):
+        devices = []
+        try:
+            devices = usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT)
+        except:
+            pass
+        for d in devices:
             try:
                 dev = USBSock(d)
                 b = dev.connect()
                 self.nxtbricks.append(b)
             except:
                 pass
-
         self.motor_pos_A = []
         self.motor_pos_B = []
         self.motor_pos_C = []
