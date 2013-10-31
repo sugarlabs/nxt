@@ -92,7 +92,7 @@ class Nxt_plugin(Plugin):
                      prim_name='nxtrefresh',
                      help_string=_('Search for a connected NXT brick.'))
         self.tw.lc.def_prim('nxtrefresh', 0,
-            Primitive(self._prim_nxtrefresh))
+            Primitive(self.refresh))
         special_block_colors['nxtrefresh'] = COLOR_PRESENT[:]
 
         palette_motors.add_block('nxtselect',
@@ -102,7 +102,7 @@ class Nxt_plugin(Plugin):
                           help_string=_('set current NXT device'),
                           prim_name = 'nxtselect')
         self.tw.lc.def_prim('nxtselect', 1,
-            Primitive(self._prim_nxtselect, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.select, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtcount',
                           style='box-style',
@@ -110,7 +110,7 @@ class Nxt_plugin(Plugin):
                           help_string=_('number of NXT devices'),
                           prim_name = 'nxtcount')
         self.tw.lc.def_prim('nxtcount', 0,
-            Primitive(self._prim_nxtcount, TYPE_INT))
+            Primitive(self.count, TYPE_INT))
 
         palette_motors.add_block('nxtbrickname',
                   style='number-style-1arg',
@@ -119,7 +119,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Get the name of a brick.'),
                   prim_name='nxtbrickname')
         self.tw.lc.def_prim('nxtbrickname', 1,
-            Primitive(self._prim_nxtbrickname, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.brickname, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtplaytone',
                   style='basic-style-2arg',
@@ -128,7 +128,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Play a tone at frequency for time.'),
                   prim_name='nxtplaytone')
         self.tw.lc.def_prim('nxtplaytone', 2,
-            Primitive(self._prim_nxtplaytone, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.playtone, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtturnmotor',
                   style='basic-style-3arg',
@@ -137,7 +137,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('turn a motor'),
                   prim_name='nxtturnmotor')
         self.tw.lc.def_prim('nxtturnmotor', 3,
-            Primitive(self._prim_nxtturnmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.turnmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtsyncmotors',
                   style='basic-style-3arg',
@@ -146,7 +146,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('synchronize two motors connected in PORT B and PORT C,'),
                   prim_name='nxtsyncmotors')
         self.tw.lc.def_prim('nxtsyncmotors', 3,
-            Primitive(self._prim_nxtsyncmotors, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.syncmotors, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         global CONSTANTS
         CONSTANTS['PORT A'] = _('A')
@@ -183,7 +183,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('synchronize two motors connected in PORT B and PORT C'),
                   prim_name='nxtsyncmotorsforever')
         self.tw.lc.def_prim('nxtsyncmotorsforever', 2,
-            Primitive(self._prim_nxtsyncmotorsforever, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.syncmotorsforever, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtstartmotor',
                   style='basic-style-2arg',
@@ -192,7 +192,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Run a motor forever.'),
                   prim_name='nxtstartmotor')
         self.tw.lc.def_prim('nxtstartmotor', 2,
-            Primitive(self._prim_nxtstartmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.startmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtbrake',
                   style='basic-style-1arg',
@@ -201,7 +201,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Stop a specified motor.'),
                   prim_name='nxtbrake')
         self.tw.lc.def_prim('nxtbrake', 1,
-            Primitive(self._prim_nxtbrake, arg_descs=[ArgSlot(TYPE_STRING)]))
+            Primitive(self.brake, arg_descs=[ArgSlot(TYPE_STRING)]))
 
         palette_motors.add_block('nxtmotorreset',
                   style='basic-style-1arg',
@@ -210,7 +210,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Reset the motor counter.'),
                   prim_name='nxtmotorreset')
         self.tw.lc.def_prim('nxtmotorreset', 1,
-            Primitive(self._prim_nxtmotorreset, arg_descs=[ArgSlot(TYPE_STRING)]))
+            Primitive(self.motorreset, arg_descs=[ArgSlot(TYPE_STRING)]))
 
         palette_motors.add_block('nxtmotorposition',
                   style='number-style-1arg',
@@ -219,7 +219,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Get the motor position.'),
                   prim_name='nxtmotorposition')
         self.tw.lc.def_prim('nxtmotorposition', 1,
-            Primitive(self._prim_nxtmotorposition, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING)]))
+            Primitive(self.motorposition, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING)]))
 
         # Palette of Sensors
         debug_output('creating %s palette' % _('nxt-sensors'), self.tw.running_sugar)
@@ -241,7 +241,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Read sensor output.'),
                   prim_name='nxtreadsensor')
         self.tw.lc.def_prim('nxtreadsensor', 2,
-            Primitive(self._prim_nxtreadsensor, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
+            Primitive(self.readsensor, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
 
         CONSTANTS['PORT 2'] = _('2')
         palette_sensors.add_block('nxtport2',
@@ -330,7 +330,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Set color sensor light.'),
                   prim_name='nxtsetcolor')
         self.tw.lc.def_prim('nxtsetcolor', 2,
-            Primitive(self._prim_nxtsetcolor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
+            Primitive(self.setcolor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
 
         palette_sensors.add_block('nxtbattery',
                   style='box-style',
@@ -338,7 +338,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Get the battery level of the brick in millivolts'),
                   prim_name='nxtbattery')
         self.tw.lc.def_prim('nxtbattery', 0,
-            Primitive(self._prim_nxtbattery, TYPE_INT))
+            Primitive(self.battery, TYPE_INT))
 
     ############################### Turtle signals ############################
 
@@ -369,7 +369,7 @@ class Nxt_plugin(Plugin):
 
     ################################# Primitives ##############################
 
-    def _prim_nxtturnmotor(self, port, turns, power):
+    def turnmotor(self, port, turns, power):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -392,7 +392,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtsyncmotors(self, power, steering, turns):
+    def syncmotors(self, power, steering, turns):
         if self.nxtbricks:
             if not((power < -127) or (power > 127)):
                 if turns < 0:
@@ -410,7 +410,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtsyncmotorsforever(self, power, steering):
+    def syncmotorsforever(self, power, steering):
         if self.nxtbricks:
             if not((power < -127) or (power > 127)):
                 try:
@@ -425,7 +425,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtplaytone(self, freq, time):
+    def playtone(self, freq, time):
         if self.nxtbricks:
             try:
                 self.nxtbricks[self.active_nxt].play_tone(freq, time)
@@ -434,7 +434,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtreadsensor(self, port, sensor):
+    def readsensor(self, port, sensor):
         """ Read sensor at specified port"""
         port = str(port)
         port_up = port.upper()
@@ -470,7 +470,7 @@ class Nxt_plugin(Plugin):
             pass
         return res
 
-    def _prim_nxtstartmotor(self, port, power):
+    def startmotor(self, port, power):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -489,7 +489,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtbrake(self, port):
+    def brake(self, port):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -505,7 +505,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtsetcolor(self, port, color):
+    def setcolor(self, port, color):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -530,7 +530,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtmotorreset(self, port):
+    def motorreset(self, port):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -553,7 +553,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtmotorposition(self, port):
+    def motorposition(self, port):
         if self.nxtbricks:
             port = str(port)
             port_up = port.upper()
@@ -576,7 +576,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtbattery(self):
+    def battery(self):
         if self.nxtbricks:
             try:
                 return self.nxtbricks[self.active_nxt].get_battery_level()
@@ -585,7 +585,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def _prim_nxtrefresh(self):
+    def refresh(self):
         self.nxt_find()
         self.change_color_blocks()
         if self.nxtbricks:
@@ -594,7 +594,7 @@ class Nxt_plugin(Plugin):
         else:
             self.tw.showlabel('print', BRICK_NOT_FOUND)
 
-    def _prim_nxtselect(self, i):
+    def select(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
         try:
@@ -606,10 +606,10 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
 
-    def _prim_nxtcount(self):
+    def count(self):
         return len(self.nxtbricks)
 
-    def _prim_nxtbrickname(self, i):
+    def brickname(self, i):
         n = len(self.nxtbricks)
         # The list index begin in 0
         try:
