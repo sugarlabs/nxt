@@ -162,8 +162,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT A'] = 'A'
         palette_motors.add_block('nxtporta',
                   style='box-style',
-                  label=_('PORT A'),
-                  help_string=_('PORT A of the brick'),
+                  label=_('PORT %s') % 'A',
+                  help_string=_('PORT %s of the brick') % 'A',
                   prim_name='nxtporta')
         self.tw.lc.def_prim('nxtporta', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT A')]))
@@ -171,8 +171,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT B'] = 'B'
         palette_motors.add_block('nxtportb',
                   style='box-style',
-                  label=_('PORT B'),
-                  help_string=_('PORT B of the brick'),
+                  label=_('PORT %s') % 'B',
+                  help_string=_('PORT %s of the brick') % 'B',
                   prim_name='nxtportb')
         self.tw.lc.def_prim('nxtportb', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT B')]))
@@ -180,8 +180,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT C'] = 'C'
         palette_motors.add_block('nxtportc',
                   style='box-style',
-                  label=_('PORT C'),
-                  help_string=_('PORT C of the brick'),
+                  label=_('PORT %s') % 'C',
+                  help_string=_('PORT %s of the brick') % 'C',
                   prim_name='nxtportc')
         self.tw.lc.def_prim('nxtportc', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT C')]))
@@ -247,8 +247,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT 2'] = 2
         palette_sensors.add_block('nxtport2',
                   style='box-style',
-                  label=_('PORT 2'),
-                  help_string=_('PORT 2 of the brick'),
+                  label=_('PORT %s') % 2,
+                  help_string=_('PORT %s of the brick') % 2,
                   prim_name='nxtport2')
         self.tw.lc.def_prim('nxtport2', 0,
             Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 2')]))
@@ -274,8 +274,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT 3'] = 3
         palette_sensors.add_block('nxtport3',
                   style='box-style',
-                  label=_('PORT 3'),
-                  help_string=_('PORT 3 of the brick'),
+                  label=_('PORT %s') % 3,
+                  help_string=_('PORT %s of the brick') % 3,
                   prim_name='nxtport3')
         self.tw.lc.def_prim('nxtport3', 0,
             Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 3')]))
@@ -301,8 +301,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT 4'] = 4
         palette_sensors.add_block('nxtport4',
                   style='box-style',
-                  label=_('PORT 4'),
-                  help_string=_('PORT 4 of the brick'),
+                  label=_('PORT %s') % 4,
+                  help_string=_('PORT %s of the brick') % 4,
                   prim_name='nxtport4')
         self.tw.lc.def_prim('nxtport4', 0,
             Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 4')]))
