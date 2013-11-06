@@ -64,7 +64,6 @@ ERROR_PORT_S = _("Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4")
 ERROR_POWER = _('The value of power must be between -127 to 127')
 ERROR_NO_NUMBER = _("The parameter must be a integer, not '%s'")
 ERROR = _('An error has occurred: check all connections and try to reconnect')
-
 BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
 BRICK_INDEX_NOT_FOUND = _('Brick number %s was not found')
@@ -342,30 +341,12 @@ class Nxt_plugin(Plugin):
 
     ############################### Turtle signals ############################
 
-    def start(self):
-        # This gets called by the start button
-        pass
-
     def stop(self):
-        # This gets called by the stop button
-        for i in range(len(self.nxtbricks)):
-            try:
-                Motor(self.nxtbricks[i], PORT_A).idle()
-                Motor(self.nxtbricks[i], PORT_B).idle()
-                Motor(self.nxtbricks[i], PORT_C).idle()
-            except:
-                pass
+        self._idle_motors()
 
     def quit(self):
-        # This gets called by the quit button
-        for i in range(len(self.nxtbricks)):
-            try:
-                Motor(self.nxtbricks[i], PORT_A).idle()
-                Motor(self.nxtbricks[i], PORT_B).idle()
-                Motor(self.nxtbricks[i], PORT_C).idle()
-                self.nxtbricks[i].close_brick()
-            except:
-                pass
+        self._idle_motors()
+        self._close_bricks()
 
     ################################# Primitives ##############################
 
@@ -598,7 +579,8 @@ class Nxt_plugin(Plugin):
         n = len(self.nxtbricks)
         # The list index begin in 0
         try:
-            i = int(i - 1)
+            i = int(i)
+            i = i - 1
         except:
             raise logoerror(ERROR_NO_NUMBER % str(i))
         if (i < n) and (i >= 0):
@@ -645,17 +627,25 @@ class Nxt_plugin(Plugin):
             self.tw.regenerate_palette(index1)
             self.tw.regenerate_palette(index2)
 
-    def nxt_find(self):
+    def _close_bricks(self):
         for b in self.nxtbricks:
             try:
                 b.close()
             except:
                 pass
+        self.nxtbricks = []
+
+    def _idle_motors(self):
+        for b in self.nxtbricks:
             try:
-                b.__del__()
+                Motor(b, PORT_A).idle()
+                Motor(b, PORT_B).idle()
+                Motor(b, PORT_C).idle()
             except:
                 pass
-        self.nxtbricks = []
+
+    def nxt_find(self):
+        self._close_bricks()
         devices = []
         try:
             devices = usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT)
