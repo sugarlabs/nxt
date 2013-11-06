@@ -67,6 +67,8 @@ ERROR = _('An error has occurred: check all connections and try to reconnect')
 BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
 BRICK_INDEX_NOT_FOUND = _('Brick number %s was not found')
+SYNC_STRING1 = '    \n'
+SYNC_STRING2 = '          \n'
 
 
 class Nxt_plugin(Plugin):
@@ -139,13 +141,22 @@ class Nxt_plugin(Plugin):
             Primitive(self.turnmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtsyncmotors',
-                  style='basic-style-3arg',
-                  label=[_('synchronize\n\nmotors'), _('power'), _('rotations'), _('steering')],
-                  default=[100, 0, 1],
-                  help_string=_('synchronize two motors connected in PORT B and PORT C,'),
+                  style='basic-style-2arg',
+                  label=[_('synchronize%smotors') % SYNC_STRING1, _('power'), _('rotations')],
+                  default=[100, 1],
+                  help_string=_('synchronize two motors connected in PORT B and PORT C'),
                   prim_name='nxtsyncmotors')
-        self.tw.lc.def_prim('nxtsyncmotors', 3,
-            Primitive(self.syncmotors, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+        self.tw.lc.def_prim('nxtsyncmotors', 2,
+            Primitive(self.syncmotors, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+
+        palette_motors.add_block('nxtsyncmotorsforever',
+                  style='basic-style-1arg',
+                  label=[_('synchronize%smotors') % SYNC_STRING2, _('power')],
+                  default=[100],
+                  help_string=_('synchronize two motors connected in PORT B and PORT C'),
+                  prim_name='nxtsyncmotorsforever')
+        self.tw.lc.def_prim('nxtsyncmotorsforever', 1,
+            Primitive(self.syncmotorsforever, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         global CONSTANTS
         CONSTANTS['PORT A'] = _('A')
@@ -174,15 +185,6 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtportc')
         self.tw.lc.def_prim('nxtportc', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT C')]))
-
-        palette_motors.add_block('nxtsyncmotorsforever',
-                  style='basic-style-2arg',
-                  label=[_('synchronize\nmotors'), _('power'), _('steering')],
-                  default=[100, 0],
-                  help_string=_('synchronize two motors connected in PORT B and PORT C'),
-                  prim_name='nxtsyncmotorsforever')
-        self.tw.lc.def_prim('nxtsyncmotorsforever', 2,
-            Primitive(self.syncmotorsforever, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtstartmotor',
                   style='basic-style-2arg',
@@ -373,7 +375,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def syncmotors(self, power, steering, turns):
+    def syncmotors(self, power, turns):
         if self.nxtbricks:
             if not((power < -127) or (power > 127)):
                 if turns < 0:
@@ -382,7 +384,7 @@ class Nxt_plugin(Plugin):
                 try:
                     motorB = Motor(self.nxtbricks[self.active_nxt], PORT_B)
                     motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
-                    syncmotors = SynchronizedMotors(motorB, motorC, steering)
+                    syncmotors = SynchronizedMotors(motorB, motorC, 0)
                     syncmotors.turn(power, int(turns*360))
                 except:
                     raise logoerror(ERROR)
@@ -391,13 +393,13 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def syncmotorsforever(self, power, steering):
+    def syncmotorsforever(self, power):
         if self.nxtbricks:
             if not((power < -127) or (power > 127)):
                 try:
                     motorB = Motor(self.nxtbricks[self.active_nxt], PORT_B)
                     motorC = Motor(self.nxtbricks[self.active_nxt], PORT_C)
-                    syncmotors = SynchronizedMotors(motorB, motorC, steering)
+                    syncmotors = SynchronizedMotors(motorB, motorC, 0)
                     syncmotors.run(power)
                 except:
                     raise logoerror(ERROR)
