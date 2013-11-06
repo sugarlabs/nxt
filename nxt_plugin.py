@@ -133,7 +133,7 @@ class Nxt_plugin(Plugin):
 
         palette_motors.add_block('nxtturnmotor',
                   style='basic-style-3arg',
-                  label=[_('turn motor\n\n'), _('port'), _('rotations'), _('power')],
+                  label=[_('turn motor%s') % '\n\n', _('port'), _('rotations'), _('power')],
                   default=['None', 1, 100],
                   help_string=_('turn a motor'),
                   prim_name='nxtturnmotor')
