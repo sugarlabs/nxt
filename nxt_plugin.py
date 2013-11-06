@@ -230,8 +230,8 @@ class Nxt_plugin(Plugin):
         CONSTANTS['PORT 1'] = 1
         palette_sensors.add_block('nxtport1',
                   style='box-style',
-                  label=_('PORT 1'),
-                  help_string=_('PORT 1 of the brick'),
+                  label=_('PORT %s') % 1,
+                  help_string=_('PORT %s of the brick') % 1,
                   prim_name='nxtport1')
         self.tw.lc.def_prim('nxtport1', 0,
             Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 1')]))
