@@ -48,21 +48,21 @@ from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
 from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
 
-NXT_SENSORS = {_('button'): 0, _('distance'): 1, _('color'): 2, _('light'): 3, _('sound'): 4, _('gray'): 5}
 NXT_MOTOR_PORTS = {'A': PORT_A, 'B': PORT_B, 'C': PORT_C}
-NXT_SENSOR_PORTS = {'1': PORT_1, '2': PORT_2, '3': PORT_3, '4': PORT_4}
+NXT_SENSOR_PORTS = {1: PORT_1, 2: PORT_2, 3: PORT_3, 4: PORT_4}
+NXT_SENSORS = [_('button'), _('distance'), _('color'), _('light'), _('sound'), _('gray')]
 
 colors = [None, BLACK, CONSTANTS['blue'], CONSTANTS['green'], CONSTANTS['yellow'], CONSTANTS['red'], WHITE]
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
 
-
 ERROR_BRICK = _('Please check the connection with the brick')
 ERROR_PORT_M = _("Invalid port '%s'. Port must be: PORT A, B or C")
 ERROR_PORT_S = _("Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4")
 ERROR_POWER = _('The value of power must be between -127 to 127')
 ERROR_NO_NUMBER = _("The parameter must be a integer, not '%s'")
+ERROR_UNKNOW_SENSOR = ("Unknow '%s' sensor")
 ERROR = _('An error has occurred: check all connections and try to reconnect')
 BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
@@ -159,7 +159,7 @@ class Nxt_plugin(Plugin):
             Primitive(self.syncmotorsforever, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         global CONSTANTS
-        CONSTANTS['PORT A'] = _('A')
+        CONSTANTS['PORT A'] = 'A'
         palette_motors.add_block('nxtporta',
                   style='box-style',
                   label=_('PORT A'),
@@ -168,7 +168,7 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtporta', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT A')]))
 
-        CONSTANTS['PORT B'] = _('B')
+        CONSTANTS['PORT B'] = 'B'
         palette_motors.add_block('nxtportb',
                   style='box-style',
                   label=_('PORT B'),
@@ -177,7 +177,7 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtportb', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT B')]))
 
-        CONSTANTS['PORT C'] = _('C')
+        CONSTANTS['PORT C'] = 'C'
         palette_motors.add_block('nxtportc',
                   style='box-style',
                   label=_('PORT C'),
@@ -227,14 +227,14 @@ class Nxt_plugin(Plugin):
         palette_sensors = make_palette('nxt-sensors', COLOR_NOTPRESENT,
                     _('Palette of LEGO NXT blocks of sensors'))
 
-        CONSTANTS['PORT 1'] = _('1')
+        CONSTANTS['PORT 1'] = 1
         palette_sensors.add_block('nxtport1',
                   style='box-style',
                   label=_('PORT 1'),
                   help_string=_('PORT 1 of the brick'),
                   prim_name='nxtport1')
         self.tw.lc.def_prim('nxtport1', 0,
-            Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT 1')]))
+            Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 1')]))
 
         palette_sensors.add_block('nxtreadsensor',
                   style='number-style-block',
@@ -242,16 +242,16 @@ class Nxt_plugin(Plugin):
                   help_string=_('Read sensor output.'),
                   prim_name='nxtreadsensor')
         self.tw.lc.def_prim('nxtreadsensor', 2,
-            Primitive(self.readsensor, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
+            Primitive(self.readsensor, TYPE_INT, [ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_STRING)]))
 
-        CONSTANTS['PORT 2'] = _('2')
+        CONSTANTS['PORT 2'] = 2
         palette_sensors.add_block('nxtport2',
                   style='box-style',
                   label=_('PORT 2'),
                   help_string=_('PORT 2 of the brick'),
                   prim_name='nxtport2')
         self.tw.lc.def_prim('nxtport2', 0,
-            Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT 2')]))
+            Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 2')]))
 
         CONSTANTS['light'] = _('light')
         palette_sensors.add_block('nxtlight',
@@ -271,14 +271,14 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtgray', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('gray')]))
 
-        CONSTANTS['PORT 3'] = _('3')
+        CONSTANTS['PORT 3'] = 3
         palette_sensors.add_block('nxtport3',
                   style='box-style',
                   label=_('PORT 3'),
                   help_string=_('PORT 3 of the brick'),
                   prim_name='nxtport3')
         self.tw.lc.def_prim('nxtport3', 0,
-            Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT 3')]))
+            Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 3')]))
 
         CONSTANTS['button'] = _('button')
         palette_sensors.add_block('nxtbutton',
@@ -298,14 +298,14 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtdistance', 0,
             Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('distance')]))
 
-        CONSTANTS['PORT 4'] = _('4')
+        CONSTANTS['PORT 4'] = 4
         palette_sensors.add_block('nxtport4',
                   style='box-style',
                   label=_('PORT 4'),
                   help_string=_('PORT 4 of the brick'),
                   prim_name='nxtport4')
         self.tw.lc.def_prim('nxtport4', 0,
-            Primitive(CONSTANTS.get, TYPE_STRING, [ConstantArg('PORT 4')]))
+            Primitive(CONSTANTS.get, TYPE_INT, [ConstantArg('PORT 4')]))
 
         CONSTANTS['sound'] = _('sound')
         palette_sensors.add_block('nxtsound',
@@ -419,14 +419,19 @@ class Nxt_plugin(Plugin):
 
     def readsensor(self, port, sensor):
         """ Read sensor at specified port"""
-        port = str(port)
-        port_up = port.upper()
-        if (port_up in NXT_SENSOR_PORTS):
-            if self.nxtbricks:
-                port_aux = NXT_SENSOR_PORTS[port_up]
-                return self._aux_read_sensor(port_aux, sensor)
+        try:
+            port = int(port)
+        except:
+            pass
+        if (port in NXT_SENSOR_PORTS):
+            if (sensor in NXT_SENSORS):
+                if self.nxtbricks:
+                    port_aux = NXT_SENSOR_PORTS[port]
+                    return self._aux_read_sensor(port_aux, sensor)
+                else:
+                    return -1
             else:
-                return -1
+                raise logoerror(ERROR_UNKNOW_SENSOR % sensor)
         else:
             raise logoerror(ERROR_PORT_S % port)
 
