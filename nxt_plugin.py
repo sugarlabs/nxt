@@ -77,6 +77,7 @@ class Nxt_plugin(Plugin):
         self.tw = parent
         self._bricks = []
         self.active_nxt = 0
+        self._motor_pos = {}
         #self.nxt_find()
 
     def setup(self):
@@ -283,7 +284,7 @@ class Nxt_plugin(Plugin):
                   default=[1],
                   help_string=_('color sensor'),
                   prim_name='nxtcolor')
-        self.tw.lc.def_prim('nxtcolor', 0,
+        self.tw.lc.def_prim('nxtcolor', 1,
             Primitive(self.getColor, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
         CONSTANTS['PORT 1'] = 1
@@ -606,12 +607,7 @@ class Nxt_plugin(Plugin):
                 try:
                     m = Motor(self._bricks[self.active_nxt], port)
                     t = m.get_tacho()
-                    if port == PORT_A:
-                        self.motor_pos_A[self.active_nxt] = t.tacho_count
-                    elif port == PORT_B:
-                        self.motor_pos_B[self.active_nxt] = t.tacho_count
-                    elif port == PORT_C:
-                        self.motor_pos_C[self.active_nxt] = t.tacho_count
+                    self._motor_pos[port_up][self.active_nxt] = t.tacho_count
                     m.idle()
                 except:
                     raise logoerror(ERROR)
@@ -629,12 +625,7 @@ class Nxt_plugin(Plugin):
                 try:
                     m = Motor(self._bricks[self.active_nxt], port)
                     t = m.get_tacho()
-                    if port == PORT_A:
-                        previous = self.motor_pos_A[self.active_nxt]
-                    elif port == PORT_B:
-                        previous = self.motor_pos_B[self.active_nxt]
-                    elif port == PORT_C:
-                        previous = self.motor_pos_C[self.active_nxt]
+                    previous = self._motor_pos[port_up][self.active_nxt]
                     return (t.tacho_count - previous)
                 except:
                     raise logoerror(ERROR)
@@ -662,14 +653,13 @@ class Nxt_plugin(Plugin):
             self.tw.showlabel('print', BRICK_NOT_FOUND)
 
     def select(self, i):
-        n = len(self._bricks)
         # The list index begin in 0
         try:
             i = int(i)
             i = i - 1
         except:
             raise logoerror(ERROR_NO_NUMBER % str(i))
-        if (i < n) and (i >= 0):
+        if (i < len(self._bricks)) and (i >= 0):
             self.active_nxt = i
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
@@ -678,13 +668,13 @@ class Nxt_plugin(Plugin):
         return len(self._bricks)
 
     def brickname(self, i):
-        n = len(self._bricks)
         # The list index begin in 0
         try:
-            i = int(i - 1)
+            i = int(i)
+            i = i - 1
         except:
             raise logoerror(ERROR_NO_NUMBER % str(i))
-        if (i < n) and (i >= 0):
+        if (i < len(self._bricks)) and (i >= 0):
             try:
                 info = self._bricks[i].get_device_info()
                 name = info[0]
@@ -720,6 +710,7 @@ class Nxt_plugin(Plugin):
             except:
                 pass
         self._bricks = []
+        self.active_nxt = 0
 
     def _idle_motors(self):
         for b in self._bricks:
@@ -744,11 +735,11 @@ class Nxt_plugin(Plugin):
                 self._bricks.append(b)
             except:
                 pass
-        self.motor_pos_A = []
-        self.motor_pos_B = []
-        self.motor_pos_C = []
+        self._motor_pos['A'] = []
+        self._motor_pos['B'] = []
+        self._motor_pos['C'] = []
         for i in range(len(self._bricks)):
-            self.motor_pos_A.append(0)
-            self.motor_pos_B.append(0)
-            self.motor_pos_C.append(0)
+            self._motor_pos['A'].append(0)
+            self._motor_pos['B'].append(0)
+            self._motor_pos['C'].append(0)
 
