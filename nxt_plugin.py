@@ -46,6 +46,11 @@ import usb
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
 from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
 from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
+from nxt.bluesock import BlueSock
+try:
+    from nxt import bluetooth
+except:
+    bluetooth = None
 
 NXT_MOTOR_PORTS = {'A': PORT_A, 'B': PORT_B, 'C': PORT_C}
 NXT_SENSOR_PORTS = {1: PORT_1, 2: PORT_2, 3: PORT_3, 4: PORT_4}
@@ -646,6 +651,7 @@ class Nxt_plugin(Plugin):
     def refresh(self):
         self.nxt_find()
         self.change_color_blocks()
+        self._reset_motors_pos()
         if self._bricks:
             n = len(self._bricks)
             self.tw.showlabel('print', BRICK_FOUND % int(n))
@@ -721,20 +727,7 @@ class Nxt_plugin(Plugin):
             except:
                 pass
 
-    def nxt_find(self):
-        self._close_bricks()
-        devices = []
-        try:
-            devices = usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT)
-        except:
-            pass
-        for d in devices:
-            try:
-                dev = USBSock(d)
-                b = dev.connect()
-                self._bricks.append(b)
-            except:
-                pass
+    def _reset_motors_pos(self):
         self._motor_pos['A'] = []
         self._motor_pos['B'] = []
         self._motor_pos['C'] = []
@@ -742,4 +735,31 @@ class Nxt_plugin(Plugin):
             self._motor_pos['A'].append(0)
             self._motor_pos['B'].append(0)
             self._motor_pos['C'].append(0)
+
+    def _nxt_search(self):
+        ret = []
+        devices = []
+        try:
+            devices = usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT)
+        except:
+            pass
+        for dev in devices:
+            ret.append(USBSock(dev))
+        devices = []
+        try:
+            devices = bluetooth.discover_devices(lookup_names=True)
+        except:
+            pass
+        for h, n in devices:
+            ret.append(BlueSock(h))
+        return ret
+
+    def nxt_find(self):
+        self._close_bricks()
+        for dev in self._nxt_search():
+            try:
+                b = dev.connect()
+                self._bricks.append(b)
+            except:
+                pass
 
