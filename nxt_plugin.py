@@ -747,11 +747,11 @@ class Nxt_plugin(Plugin):
             ret.append(USBSock(dev))
         devices = []
         try:
-            devices = bluetooth.discover_devices(lookup_names=True)
+            devices = bluetooth.discover_devices()
         except:
             pass
-        for h, n in devices:
-            ret.append(BlueSock(h))
+        for dev in devices:
+            ret.append(BlueSock(dev))
         return ret
 
     def nxt_find(self):
