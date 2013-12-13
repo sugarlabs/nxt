@@ -712,7 +712,7 @@ class Nxt_plugin(Plugin):
     def _close_bricks(self):
         for b in self._bricks:
             try:
-                b.close()
+                b.__del__()
             except:
                 pass
         self._bricks = []
