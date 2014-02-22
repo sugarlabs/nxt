@@ -49,7 +49,6 @@ class USBSock(object):
             if self.device.is_kernel_driver_active(NXT_INTERFACE):
                 self.device.detach_kernel_driver(NXT_INTERFACE)
             self.device.set_configuration(NXT_CONFIGURATION)
-            usb.util.claim_interface(self.device, NXT_INTERFACE)
         except Exception, err:
             if self.debug:
                 print 'ERROR:usbsock:connect', err
@@ -71,11 +70,11 @@ class USBSock(object):
         if self.debug:
             print 'Send:',
             print ':'.join('%02x' % ord(c) for c in data)
-        self.device.write(OUT_ENDPOINT, data, NXT_INTERFACE, TIMEOUT)
+        self.device.write(OUT_ENDPOINT, data, TIMEOUT)
 
     def recv(self):
         'Use to recieve raw data over USB connection ***ADVANCED USERS ONLY***'
-        data = self.device.read(IN_ENDPOINT, 64, NXT_INTERFACE, TIMEOUT)
+        data = self.device.read(IN_ENDPOINT, 64, TIMEOUT)
         if self.debug:
             print 'Recv:',
             print ':'.join('%02x' % (c & 0xFF) for c in data)
