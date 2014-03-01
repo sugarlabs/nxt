@@ -48,7 +48,7 @@ from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasoni
 from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
 from nxt.bluesock import BlueSock
 try:
-    from nxt import bluetooth
+    import bluetooth
 except:
     bluetooth = None
 
