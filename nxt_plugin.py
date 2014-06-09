@@ -67,7 +67,8 @@ ERROR_PORT_S = _("Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4")
 ERROR_POWER = _('The value of power must be between -127 to 127')
 ERROR_NO_NUMBER = _("The parameter must be a integer, not '%s'")
 ERROR_UNKNOW_SENSOR = ("Unknow '%s' sensor")
-ERROR = _('An error has occurred: check all connections and try to reconnect')
+ERROR_GENERIC = _('An error has occurred: check all connections and try to reconnect')
+ERROR = -1
 BRICK_FOUND = _('NXT found %s bricks')
 BRICK_NOT_FOUND = _('NXT not found')
 BRICK_INDEX_NOT_FOUND = _('Brick number %s was not found')
@@ -371,7 +372,7 @@ class Nxt_plugin(Plugin):
                         m.turn(power, int(turns*360), brake=True)
                         m.brake()
                     except:
-                        raise logoerror(ERROR)
+                        raise logoerror(ERROR_GENERIC)
                 else:
                     raise logoerror(ERROR_POWER)
             else:
@@ -391,7 +392,7 @@ class Nxt_plugin(Plugin):
                     syncmotors = SynchronizedMotors(motorB, motorC, 0)
                     syncmotors.turn(power, int(turns*360))
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_POWER)
         else:
@@ -406,7 +407,7 @@ class Nxt_plugin(Plugin):
                     syncmotors = SynchronizedMotors(motorB, motorC, 0)
                     syncmotors.run(power)
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_POWER)
         else:
@@ -417,7 +418,7 @@ class Nxt_plugin(Plugin):
             try:
                 self._bricks[self.active_nxt].play_tone(freq, time)
             except:
-                raise logoerror(ERROR)
+                raise logoerror(ERROR_GENERIC)
         else:
             raise logoerror(ERROR_BRICK)
 
@@ -554,7 +555,7 @@ class Nxt_plugin(Plugin):
                         m = Motor(self._bricks[self.active_nxt], port)
                         m.weak_turn(power, 0)
                     except:
-                        raise logoerror(ERROR)
+                        raise logoerror(ERROR_GENERIC)
                 else:
                     raise logoerror(ERROR_POWER)
             else:
@@ -572,7 +573,7 @@ class Nxt_plugin(Plugin):
                     m = Motor(self._bricks[self.active_nxt], port)
                     m.brake()
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_PORT_M % port)
         else:
@@ -597,7 +598,7 @@ class Nxt_plugin(Plugin):
                 try:
                     Color20(self._bricks[self.active_nxt], port).set_light_color(color)
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -615,7 +616,7 @@ class Nxt_plugin(Plugin):
                     self._motor_pos[port_up][self.active_nxt] = t.tacho_count
                     m.idle()
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_PORT_M % port)
         else:
@@ -633,7 +634,7 @@ class Nxt_plugin(Plugin):
                     previous = self._motor_pos[port_up][self.active_nxt]
                     return (t.tacho_count - previous)
                 except:
-                    raise logoerror(ERROR)
+                    raise logoerror(ERROR_GENERIC)
             else:
                 raise logoerror(ERROR_PORT_M % port)
         else:
@@ -644,7 +645,7 @@ class Nxt_plugin(Plugin):
             try:
                 return self._bricks[self.active_nxt].get_battery_level()
             except:
-                raise logoerror(ERROR)
+                raise logoerror(ERROR_GENERIC)
         else:
             raise logoerror(ERROR_BRICK)
 
@@ -687,7 +688,7 @@ class Nxt_plugin(Plugin):
                 name = name.replace('\x00', '')
                 return name
             except:
-                raise logoerror(ERROR)
+                raise logoerror(ERROR_GENERIC)
         else:
             raise logoerror(BRICK_INDEX_NOT_FOUND % int(i + 1))
 
