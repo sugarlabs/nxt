@@ -344,7 +344,7 @@ class Nxt_plugin(Plugin):
                   help_string=_('Set color sensor light.'),
                   prim_name='nxtsetcolor')
         self.tw.lc.def_prim('nxtsetcolor', 2,
-            Primitive(self.setcolor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_STRING)]))
+            Primitive(self.setcolor, arg_descs=[ArgSlot(TYPE_INT), ArgSlot(TYPE_INT)]))
 
     ############################### Turtle signals ############################
 
