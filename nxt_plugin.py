@@ -581,10 +581,12 @@ class Nxt_plugin(Plugin):
 
     def setcolor(self, port, color):
         if self._bricks:
-            port = str(port)
-            port_up = port.upper()
-            if (port_up in NXT_SENSOR_PORTS):
-                port = NXT_SENSOR_PORTS[port_up]
+            try:
+                port = int(port)
+            except:
+                pass
+            if (port in NXT_SENSOR_PORTS):
+                port_aux = NXT_SENSOR_PORTS[port]
                 if color == WHITE:
                     color = Type.COLORFULL
                 elif color == CONSTANTS['red']:
@@ -596,7 +598,7 @@ class Nxt_plugin(Plugin):
                 else:
                     color = Type.COLORNONE
                 try:
-                    Color20(self._bricks[self.active_nxt], port).set_light_color(color)
+                    Color20(self._bricks[self.active_nxt], port_aux).set_light_color(color)
                 except:
                     raise logoerror(ERROR_GENERIC)
             else:
