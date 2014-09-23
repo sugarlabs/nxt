@@ -233,7 +233,6 @@ class Nxt_plugin(Plugin):
                                     _('Palette of LEGO NXT blocks of sensors'),
                                     translation=_('nxt-sensors'))
 
-        CONSTANTS['light'] = _('light')
         palette_sensors.add_block('nxtlight',
                   style='number-style-1arg',
                   label=_('light'),
@@ -243,7 +242,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtlight', 1,
             Primitive(self.getLight, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
-        CONSTANTS['gray'] = _('gray')
         palette_sensors.add_block('nxtgray',
                   style='number-style-1arg',
                   label=_('gray'),
@@ -253,7 +251,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtgray', 1,
             Primitive(self.getGray, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
-        CONSTANTS['button'] = _('button')
         palette_sensors.add_block('nxtbutton',
                   style='number-style-1arg',
                   label=_('button'),
@@ -263,7 +260,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtbutton', 1,
             Primitive(self.getButton, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
-        CONSTANTS['distance'] = _('distance')
         palette_sensors.add_block('nxtdistance',
                   style='number-style-1arg',
                   label=_('distance'),
@@ -273,7 +269,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtdistance', 1,
             Primitive(self.getDistance, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
-        CONSTANTS['sound'] = _('sound')
         palette_sensors.add_block('nxtsound',
                   style='number-style-1arg',
                   label=_('sound'),
@@ -283,7 +278,6 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsound', 1,
             Primitive(self.getSound, TYPE_INT, [ArgSlot(TYPE_INT)]))
 
-        CONSTANTS['color'] = _('color')
         palette_sensors.add_block('nxtcolor',
                   style='number-style-1arg',
                   label=_('color'),
