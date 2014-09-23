@@ -41,43 +41,40 @@ class USBSock(object):
     def __str__(self):
         return 'USB (%s)' % (self.device.filename)
 
+    def _debug(self, message, err=''):
+        if self.debug:
+            print message, err
+
     def connect(self):
         'Use to connect to NXT.'
-        if self.debug:
-            print 'Connecting via USB...'
+        self._debug('Connecting via USB...')
         try:
             if self.device.is_kernel_driver_active(NXT_INTERFACE):
                 self.device.detach_kernel_driver(NXT_INTERFACE)
             self.device.set_configuration(NXT_CONFIGURATION)
         except Exception, err:
-            if self.debug:
-                print 'ERROR:usbsock:connect', err
+            self._debug('ERROR:usbsock:connect', err)
             raise
-        if self.debug:
-            print 'Connected.'
+        self._debug('Connected.')
         return Brick(self)
 
     def close(self):
         'Use to close the connection.'
-        if self.debug:
-            print 'Closing USB connection...'
+        self._debug('Closing USB connection...')
         self.device = None
-        if self.debug:
-            print 'USB connection closed.'
+        self._debug('USB connection closed.')
 
     def send(self, data):
         'Use to send raw data over USB connection ***ADVANCED USERS ONLY***'
-        if self.debug:
-            print 'Send:',
-            print ':'.join('%02x' % ord(c) for c in data)
+        self._debug('Send:')
+        self._debug(':'.join('%02x' % ord(c) for c in data))
         self.device.write(OUT_ENDPOINT, data, TIMEOUT)
 
     def recv(self):
         'Use to recieve raw data over USB connection ***ADVANCED USERS ONLY***'
         data = self.device.read(IN_ENDPOINT, 64, TIMEOUT)
-        if self.debug:
-            print 'Recv:',
-            print ':'.join('%02x' % (c & 0xFF) for c in data)
+        self._debug('Recv:')
+        self._debug(':'.join('%02x' % (c & 0xFF) for c in data))
         # NOTE: bulkRead returns a tuple of ints ... make it sane
         return ''.join(chr(d & 0xFF) for d in data)
 
