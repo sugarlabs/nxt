@@ -331,6 +331,15 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtbattery', 0,
             Primitive(self.battery, TYPE_INT))
 
+        palette_sensors.add_block('nxtlightcolor',
+                  style='number-style-1arg',
+                  label=_('color as light'),
+                  default=[1],
+                  help_string=_('use color sensor as light sensor'),
+                  prim_name='nxtlightcolor')
+        self.tw.lc.def_prim('nxtlightcolor', 1,
+            Primitive(self.getLightColor, TYPE_INT, [ArgSlot(TYPE_INT)]))
+
         palette_sensors.add_block('nxtsetcolor',
                   style='basic-style-2arg',
                   label=[_('set light'), _('port'), _('color')],
@@ -428,6 +437,26 @@ class Nxt_plugin(Plugin):
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Light(self._bricks[self.active_nxt], port_aux)
                     sensor.set_illuminated(False)
+                    res = sensor.get_lightness()
+                except:
+                    pass
+                return res
+            else:
+                raise logoerror(ERROR_PORT_S % port)
+        else:
+            raise logoerror(ERROR_BRICK)
+
+    def getLightColor(self, port):
+        if self._bricks:
+            try:
+                port = int(port)
+            except:
+                pass
+            if (port in NXT_SENSOR_PORTS):
+                res = ERROR
+                try:
+                    port_aux = NXT_SENSOR_PORTS[port]
+                    sensor = Light(self._bricks[self.active_nxt], port_aux)
                     res = sensor.get_lightness()
                 except:
                     pass
