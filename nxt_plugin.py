@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011 Emiliano Pastorino <epastorino@plan.ceibal.edu.uy>
-# Copyright (C) 2011, 2012 Butiá Team butia@fing.edu.uy 
+# Copyright (C) 2011, 2015 Butia Team butia@fing.edu.uy
 # Butia is a free open plataform for robotics projects
 # www.fing.edu.uy/inco/proyectos/butia
 # Universidad de la República del Uruguay
@@ -37,7 +37,7 @@ from TurtleArt.tapalette import palette_name_to_index
 from TurtleArt.tapalette import special_block_colors
 from TurtleArt.tapalette import palette_blocks
 from TurtleArt.talogo import logoerror
-from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS
+from TurtleArt.taconstants import BLACK, WHITE, CONSTANTS, MACROS
 from TurtleArt.taprimitive import Primitive, ArgSlot, ConstantArg
 from TurtleArt.tatype import TYPE_INT, TYPE_STRING, TYPE_NUMBER
 
@@ -84,7 +84,6 @@ class Nxt_plugin(Plugin):
         self._bricks = []
         self.active_nxt = 0
         self._motor_pos = {}
-        #self.nxt_find()
 
     def setup(self):
 
@@ -136,15 +135,6 @@ class Nxt_plugin(Plugin):
                   prim_name='nxtplaytone')
         self.tw.lc.def_prim('nxtplaytone', 2,
             Primitive(self.playtone, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
-
-        palette_motors.add_block('nxtturnmotor',
-                  style='basic-style-3arg',
-                  label=[_('turn motor %s') % '\n\n', _('port'), _('rotations'), _('power')],
-                  default=['A', 1, 100],
-                  help_string=_('turn a motor'),
-                  prim_name='nxtturnmotor')
-        self.tw.lc.def_prim('nxtturnmotor', 3,
-            Primitive(self.turnmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette_motors.add_block('nxtsyncmotors',
                   style='basic-style-2arg',
@@ -210,6 +200,28 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtbrake', 1,
             Primitive(self.brake, arg_descs=[ArgSlot(TYPE_STRING)]))
 
+        palette_motors.add_block('nxtturnmotor',
+                  style='basic-style-3arg',
+                  hidden=True,
+                  label=[_('turn motor %s') % '\n\n', _('port'), _('rotations'), _('power')],
+                  default=['A', 1, 100],
+                  help_string=_('turn a motor'),
+                  prim_name='nxtturnmotor')
+        self.tw.lc.def_prim('nxtturnmotor', 3,
+            Primitive(self.turnmotor, arg_descs=[ArgSlot(TYPE_STRING), ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
+
+        palette_motors.add_block('nxtturnmotorMacro',
+                          style='basic-style-extended-vertical',
+                          label= _('turn motor %s') % '',
+                          help_string=_('turn a motor'))
+
+        global MACROS
+        MACROS['nxtturnmotorMacro'] = [[0, 'nxtturnmotor', 0, 0, [None, 1, 2, 3, None]],
+                                          [1, ['string', 'A'], 0, 0, [0, None]],
+                                          [2, ['number', 1], 0, 0, [0, None]],
+                                          [3, ['number', 100], 0, 0, [0, None]]
+                                         ]
+
         palette_motors.add_block('nxtmotorreset',
                   style='basic-style-1arg',
                   label=_('reset motor'),
@@ -228,7 +240,8 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtmotorposition', 1,
             Primitive(self.motorposition, TYPE_INT, arg_descs=[ArgSlot(TYPE_STRING)]))
 
-        # Palette of Sensors
+        ######################### Palette of Sensors ###########################
+
         palette_sensors = make_palette('nxt-sensors', COLOR_NOTPRESENT,
                                     _('Palette of LEGO NXT blocks of sensors'),
                                     translation=_('nxt-sensors'))
