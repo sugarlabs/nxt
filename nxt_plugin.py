@@ -456,15 +456,13 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Light(self._bricks[self.active_nxt], port_aux)
                     sensor.set_illuminated(False)
-                    res = sensor.get_lightness()
+                    return sensor.get_lightness()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -477,14 +475,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Light(self._bricks[self.active_nxt], port_aux)
-                    res = sensor.get_lightness()
+                    return sensor.get_lightness()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -497,15 +493,13 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Light(self._bricks[self.active_nxt], port_aux)
                     sensor.set_illuminated(True)
-                    res = sensor.get_lightness()
+                    return sensor.get_lightness()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -518,14 +512,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Touch(self._bricks[self.active_nxt], port_aux)
-                    res = sensor.get_sample()
+                    return sensor.get_sample()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -538,14 +530,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = HTCompass(self._bricks[self.active_nxt], port_aux)
-                    res = sensor.get_heading()
+                    return sensor.get_heading()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -558,14 +548,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Ultrasonic(self._bricks[self.active_nxt], port_aux)
-                    res = sensor.get_sample()
+                    return sensor.get_sample()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -578,14 +566,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Color20(self._bricks[self.active_nxt], port_aux)
-                    res = colors[sensor.get_sample()]
+                    return colors[sensor.get_sample()]
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
@@ -598,14 +584,12 @@ class Nxt_plugin(Plugin):
             except:
                 pass
             if (port in NXT_SENSOR_PORTS):
-                res = ERROR
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Sound(self._bricks[self.active_nxt], port_aux)
-                    res = sensor.get_sample()
+                    return sensor.get_sample()
                 except:
-                    pass
-                return res
+                    return ERROR
             else:
                 raise logoerror(ERROR_PORT_S % port)
         else:
