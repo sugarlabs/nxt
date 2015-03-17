@@ -44,7 +44,9 @@ from TurtleArt.tatype import TYPE_INT, TYPE_STRING, TYPE_NUMBER
 sys.path.insert(0, os.path.abspath('./plugins/nxt_plugin'))
 import usb
 from nxt.motor import PORT_A, PORT_B, PORT_C, Motor, SynchronizedMotors
-from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4, Touch, Color20, Ultrasonic, Type, Sound, Light
+from nxt.sensor import PORT_1, PORT_2, PORT_3, PORT_4
+from nxt.sensor import Touch, Color20, Ultrasonic, Type, Sound, Light
+from nxt.sensor import HTCompass
 from nxt.usbsock import USBSock, ID_VENDOR_LEGO, ID_PRODUCT_NXT
 from nxt.bluesock import BlueSock
 try:
@@ -362,6 +364,15 @@ class Nxt_plugin(Plugin):
         self.tw.lc.def_prim('nxtsetcolor', 2,
             Primitive(self.setcolor, arg_descs=[ArgSlot(TYPE_INT), ArgSlot(TYPE_INT)]))
 
+        palette_sensors.add_block('nxtcompass',
+                  style='number-style-1arg',
+                  label=_('compass'),
+                  default=[1],
+                  help_string=_('compass sensor'),
+                  prim_name='nxtcompass')
+        self.tw.lc.def_prim('nxtcompass', 1,
+            Primitive(self.getCompass, TYPE_INT, [ArgSlot(TYPE_INT)]))
+
     ############################### Turtle signals ############################
 
     def stop(self):
@@ -521,6 +532,26 @@ class Nxt_plugin(Plugin):
             raise logoerror(ERROR_BRICK)
 
     def getDistance(self, port):
+        if self._bricks:
+            try:
+                port = int(port)
+            except:
+                pass
+            if (port in NXT_SENSOR_PORTS):
+                res = ERROR
+                try:
+                    port_aux = NXT_SENSOR_PORTS[port]
+                    sensor = HTCompass(self._bricks[self.active_nxt], port_aux)
+                    res = sensor.get_heading()
+                except:
+                    pass
+                return res
+            else:
+                raise logoerror(ERROR_PORT_S % port)
+        else:
+            raise logoerror(ERROR_BRICK)
+
+    def getCompass(self, port):
         if self._bricks:
             try:
                 port = int(port)
