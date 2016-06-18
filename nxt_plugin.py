@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2011 Emiliano Pastorino <epastorino@plan.ceibal.edu.uy>
-# Copyright (C) 2011, 2015 Butia Team butia@fing.edu.uy
+# Copyright (C) 2011, 2016 Butia Team butia@fing.edu.uy
 # Butia is a free open plataform for robotics projects
 # www.fing.edu.uy/inco/proyectos/butia
 # Universidad de la República del Uruguay
@@ -515,7 +515,10 @@ class Nxt_plugin(Plugin):
                 try:
                     port_aux = NXT_SENSOR_PORTS[port]
                     sensor = Touch(self._bricks[self.active_nxt], port_aux)
-                    return sensor.get_sample()
+                    if sensor.get_sample():
+                        return 1
+                    else:
+                        return 0
                 except:
                     return ERROR
             else:
