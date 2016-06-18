@@ -64,8 +64,8 @@ COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FF00","#008000"]
 
 ERROR_BRICK = _('Please check the connection with the brick')
-ERROR_PORT_M = _("Invalid port '%s'. Port must be: PORT A, B or C")
-ERROR_PORT_S = _("Invalid port '%s'. Port must be: PORT 1, 2, 3 or 4")
+ERROR_PORT_M = _("Invalid port '%s'. Port must be: A, B or C")
+ERROR_PORT_S = _("Invalid port '%s'. Port must be: 1, 2, 3 or 4")
 ERROR_POWER = _('The value of power must be between -127 to 127')
 ERROR_NO_NUMBER = _("The parameter must be a integer, not '%s'")
 ERROR_UNKNOW_SENSOR = ("Unknow '%s' sensor")
