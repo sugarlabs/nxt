@@ -30,8 +30,6 @@ TIMEOUT = 250
 class USBSock(object):
     'Object for USB connection to NXT'
 
-    bsize = 60	# USB socket block size
-
     type = 'usb'
 
     def __init__(self, device):
@@ -49,7 +47,7 @@ class USBSock(object):
         'Use to connect to NXT.'
         self._debug('Connecting via USB...')
         try:
-            if self.device.is_kernel_driver_active(NXT_INTERFACE):
+            if os.name != 'nt' and self.device.is_kernel_driver_active(NXT_INTERFACE):
                 self.device.detach_kernel_driver(NXT_INTERFACE)
             self.device.set_configuration(NXT_CONFIGURATION)
         except Exception, err:
@@ -65,13 +63,13 @@ class USBSock(object):
         self._debug('USB connection closed.')
 
     def send(self, data):
-        'Use to send raw data over USB connection ***ADVANCED USERS ONLY***'
+        'Use to send raw data over USB connection'
         #self._debug('Send:')
         #self._debug(':'.join('%02x' % ord(c) for c in data))
         self.device.write(OUT_ENDPOINT, data, TIMEOUT)
 
     def recv(self):
-        'Use to recieve raw data over USB connection ***ADVANCED USERS ONLY***'
+        'Use to recieve raw data over USB connection'
         data = self.device.read(IN_ENDPOINT, 64, TIMEOUT)
         #self._debug('Recv:')
         #self._debug(':'.join('%02x' % (c & 0xFF) for c in data))
@@ -79,9 +77,7 @@ class USBSock(object):
         return ''.join(chr(d & 0xFF) for d in data)
 
 def find_bricks(host=None, name=None):
-    'Use to look for NXTs connected by USB only. ***ADVANCED USERS ONLY***'
-    # FIXME: probably should check host (MAC)
-    # if anyone knows how to do this, please file a bug report
+    'Use to look for NXTs connected by USB only'
     for device in usb.core.find(find_all=True, idVendor=ID_VENDOR_LEGO, idProduct=ID_PRODUCT_NXT):
         yield USBSock(device)
 
