@@ -462,7 +462,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def getDistance(self, port):
+    def getCompass(self, port):
         if self._bricks:
             try:
                 port = int(port)
@@ -480,7 +480,7 @@ class Nxt_plugin(Plugin):
         else:
             raise logoerror(ERROR_BRICK)
 
-    def getCompass(self, port):
+    def getDistance(self, port):
         if self._bricks:
             try:
                 port = int(port)
